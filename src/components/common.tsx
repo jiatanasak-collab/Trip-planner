@@ -14,9 +14,20 @@ export function PinBtns({ q, label }: { q: string; label?: string }) {
 
 export const Spin = () => <span className="spin" />;
 
-/** ให้เบราว์เซอร์ดาวน์โหลดไฟล์ JSON */
-export function downloadJson(filename: string, data: unknown) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+/**
+ * ดาวน์โหลดไฟล์ JSON — ใน artifact ของ claude.ai ใช้ระบบดาวน์โหลดของ artifact (ผู้ใช้ยืนยันก่อนบันทึก)
+ * ที่อื่นใช้ลิงก์ดาวน์โหลดของเบราว์เซอร์ คืน true ถ้าบันทึกแล้ว
+ */
+export async function downloadJson(filename: string, data: unknown): Promise<boolean> {
+  const text = JSON.stringify(data, null, 2);
+  const c = (window as any).claude;
+  if (c && typeof c.use === "function") {
+    const dl = await c.use("downloads").catch(() => null);
+    if (dl) {
+      try { await dl.save({ filename, data: text }); return true; } catch { return false; }
+    }
+  }
+  const blob = new Blob([text], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -25,4 +36,5 @@ export function downloadJson(filename: string, data: unknown) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return true;
 }

@@ -11,6 +11,9 @@
   /* ฟอร์มที่กำหนดคอลัมน์ไว้ใน style ให้เหลือคอลัมน์เดียวบนจอเล็ก ยกเว้นแถวเวลา */
   .frow[style]:not(.keep){grid-template-columns:1fr !important}
 }
+/* ระยะขอบข้างอย่างน้อย 16px และหลบแถบระบบของมือถือ */
+.wrap{padding-left:max(18px, env(safe-area-inset-left, 0px));padding-right:max(18px, env(safe-area-inset-right, 0px))}
+.toast{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
 @media (max-width:480px){
   header.top{flex-wrap:wrap}
   header.top .spacer{display:none}
@@ -19,7 +22,7 @@
   .trip-head{padding:20px}
   .trip-head h2{font-size:26px}
   .stat{min-width:0;flex:1 1 30%}
-  .wrap{padding:16px 14px 80px}
+  .wrap{padding-block:16px 80px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
   .modal-bg{padding:16px 8px}
   .modal{padding:18px}
 }

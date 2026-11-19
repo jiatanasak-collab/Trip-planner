@@ -10,7 +10,8 @@
     "preview": "npm run build && npm start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "build:artifact": "node scripts/build-artifact.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.10.0",

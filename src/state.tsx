@@ -127,8 +127,9 @@ export function AppProvider({ store, children }: { store: TripStore; children: R
   const go = useCallback((view: "home" | "trip", tripId?: string | null) => {
     setUiState((u) => ({ ...u, view, ...(tripId !== undefined ? { tripId } : {}) }));
     const id = tripId !== undefined ? tripId : null;
+    // ใช้ hash แบบ #trip-<id> อย่างเดียว (ใช้ได้ทั้งเว็บปกติและหน้า artifact)
     const h = view === "trip" && id ? "#trip-" + id : "";
-    if (location.hash !== h) history.pushState(null, "", h || location.pathname + location.search);
+    if (location.hash !== h) location.hash = h;
     window.scrollTo(0, 0);
   }, []);
 

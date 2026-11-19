@@ -26,9 +26,8 @@ export function TripView({ trip: t }: { trip: Trip }) {
     const fallback = () => app.openModal(<CopyFallback text={text} />);
     try { navigator.clipboard.writeText(text).then(() => app.toast("คัดลอกแผนแล้ว วางในแชตหรือโน้ตได้เลย"), fallback); } catch { fallback(); }
   };
-  const exportJson = () => {
-    downloadJson(safeFileName(t.name) + ".json", makeBackup([t]));
-    app.toast("ดาวน์โหลดไฟล์ทริปแล้ว");
+  const exportJson = async () => {
+    if (await downloadJson(safeFileName(t.name) + ".json", makeBackup([t]))) app.toast("ดาวน์โหลดไฟล์ทริปแล้ว");
   };
 
   return (

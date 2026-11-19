@@ -5,7 +5,8 @@ const API_PORT = Number(process.env.API_PORT || 8787);
 
 export default defineConfig({
   plugins: [react()],
-  build: { chunkSizeWarningLimit: 800 },
+  base: process.env.VITE_BASE || "/",
+  build: { chunkSizeWarningLimit: 800, outDir: process.env.VITE_OUT_DIR || "dist" },
   server: {
     proxy: { "/api": `http://localhost:${API_PORT}` },
   },

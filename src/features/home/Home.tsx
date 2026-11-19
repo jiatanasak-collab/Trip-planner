@@ -26,9 +26,8 @@ export function Home() {
 
   if (ui.homeTab === "map") return <>{nav}<JournalMap /></>;
 
-  const backupAll = () => {
-    downloadJson(`สมุดแผนเที่ยว-สำรอง-${today}.json`, makeBackup(list, app.journal));
-    app.toast("ดาวน์โหลดไฟล์สำรองแล้ว");
+  const backupAll = async () => {
+    if (await downloadJson(`trip-planner-backup-${today}.json`, makeBackup(list, app.journal))) app.toast("ดาวน์โหลดไฟล์สำรองแล้ว");
   };
 
   return (

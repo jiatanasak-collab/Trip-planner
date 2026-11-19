@@ -15,7 +15,11 @@ export const geoReady = () => GEO;
 export function loadGeo(): Promise<GeoData> {
   if (geoP) return geoP;
   geoP = (async () => {
-    const topo: any = (await import("world-atlas/countries-50m.json")).default;
+    // ตอน build เป็นหน้า artifact ข้อมูลแผนที่อยู่เป็นไฟล์ข้างหน้าเว็บ (VITE_GEO_URL) ไม่รวมใน bundle
+    const url = import.meta.env.VITE_GEO_URL as string | undefined;
+    const topo: any = url
+      ? await fetch(url).then((r) => { if (!r.ok) throw new Error("data"); return r.json(); })
+      : (await import("world-atlas/countries-50m.json")).default;
     const fc = feature(topo, topo.objects.countries) as unknown as GeoData["fc"];
     fc.features = fc.features.filter((f) => f.id !== "010"); // ตัดแอนตาร์กติกา
     fc.features.forEach((f, i) => { if (!f.id) f.id = "x" + i; });

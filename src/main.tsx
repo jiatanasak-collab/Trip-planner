@@ -4,9 +4,10 @@ import "./styles/app.css";
 import "./styles/extra.css";
 import { App } from "./App";
 import { AppProvider } from "./state";
-import { DexieTripStore } from "./store/dexieStore";
+import { AutoStore } from "./store/autoStore";
 
-const store = new DexieTripStore();
+// เปิดใน artifact ของ claude.ai → เก็บในบัญชีผู้เปิด, ที่อื่น → IndexedDB
+const store = new AutoStore();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
