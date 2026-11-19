@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สมุดแผนเที่ยว</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --paper:#0d0e11; --card:#15171c; --ink:#f2ebde; --muted:#9d9484; --line:rgba(201,164,92,.18);
+  --teal:#c9a45c; --teal-2:rgba(201,164,92,.12); --coral:#d4876a; --coral-2:rgba(212,135,106,.14); --gold:#e0c486;
+  --on-accent:#16130d; --field:#101216;
+  --c-sight:#c9a45c; --c-food:#d4876a; --c-move:#8ea7c6; --c-stay:#b39bd0; --c-shop:#93bfa0; --c-other:#8a8478;
+  --gold-grad:linear-gradient(135deg,#e7cf98 0%,#c9a45c 45%,#a5803c 100%);
+  --r:16px; --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Thai",system-ui,sans-serif;font-size:15px;line-height:1.6;font-weight:400}
+body{background:radial-gradient(1200px 600px at 85% -10%,rgba(201,164,92,.10),transparent 60%),radial-gradient(900px 500px at -10% 10%,rgba(120,100,160,.07),transparent 60%),var(--paper);background-attachment:fixed;min-height:100vh}
+::selection{background:rgba(201,164,92,.35)}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:"Cormorant Garamond","Noto Serif Thai",serif;margin:0;line-height:1.3;font-weight:600;letter-spacing:.01em}
+a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,164,92,.3)}
+a:hover{border-bottom-color:var(--gold)}
+a.pinbtn,a.iconbtn{border-bottom:1px solid var(--line)}
+a.pinbtn.go{border-bottom-color:transparent}
+a.iconbtn{border-bottom:none}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 18px 80px}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.logo{width:42px;height:42px;border-radius:50%;background:var(--gold-grad);display:grid;place-items:center;color:var(--on-accent);flex:none;box-shadow:0 0 0 4px rgba(201,164,92,.12),0 6px 18px rgba(201,164,92,.25)}
+.top h1{font-size:28px;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+header.top{padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.top .sub{color:var(--muted);font-size:12px;letter-spacing:.08em}
+.spacer{flex:1}
+.sync{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:#3aa66a}.dot.warn{background:var(--gold)}
+.btn{border:1px solid var(--line);background:transparent;border-radius:999px;transition:all .15s;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--teal)}
+.btn.primary{background:var(--gold-grad);border-color:transparent;color:var(--on-accent);font-weight:600;box-shadow:0 4px 14px rgba(201,164,92,.25)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.coral{background:linear-gradient(135deg,#e6a68b,#c4704f);border-color:transparent;color:var(--on-accent);font-weight:600}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover{background:var(--teal-2)}
+.btn.sm{padding:5px 12px;font-size:13px;border-radius:999px}
+.btn.danger{color:var(--coral)}
+.btn:disabled{opacity:.5;cursor:default}
+.icon{width:16px;height:16px;flex:none}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)),var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+/* home */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.hero .card{padding:20px;cursor:pointer;transition:transform .12s}
+.hero .card:hover{transform:translateY(-2px);border-color:var(--teal)}
+.hero h2{font-size:22px;margin:12px 0 4px}
+.hero p{margin:0;color:var(--muted);font-size:14px}
+.hero .badge{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line)}
+.hero .card{padding:24px}
+.section-title{font-size:20px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.trips{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.trip-card{padding:16px;cursor:pointer;position:relative;overflow:hidden}
+.trip-card:hover{border-color:var(--teal)}
+.trip-card .stripe{position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--teal)}
+.trip-card h3{font-size:19px}
+.trip-card{padding:18px 18px 18px 22px}
+.trip-card .meta{color:var(--muted);font-size:13px;margin-top:4px}
+.trip-card .count{font-size:12px;margin-top:10px;display:flex;gap:10px;color:var(--muted)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+/* trip */
+.trip-head{padding:26px;margin-bottom:16px;position:relative;overflow:hidden;background:radial-gradient(600px 220px at 100% 0%,rgba(201,164,92,.16),transparent 70%),linear-gradient(180deg,#1a1c22,#14161b)}
+.trip-head::after{content:"";position:absolute;left:26px;right:26px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,164,92,.6),transparent)}
+.trip-head .row{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.trip-head h2{font-size:32px}
+.trip-head .meta{color:var(--muted);margin-top:4px;display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
+.stats{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:110px}
+.stat b{display:block;font-size:22px;font-family:"Cormorant Garamond","Noto Serif Thai",serif;color:var(--gold)}
+.stat span{font-size:11px;color:var(--muted);letter-spacing:.06em}
+.tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{padding:9px 14px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab.on{color:var(--gold);border-color:var(--teal);font-weight:600}
+.tab{letter-spacing:.04em}
+.day{margin-bottom:14px;overflow:hidden}
+.day-head{display:flex;align-items:center;gap:10px;padding:14px 18px;background:rgba(0,0,0,.18);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.day-num{border:1px solid var(--teal);color:var(--gold);border-radius:999px;padding:2px 12px;font-weight:600;font-size:12px;letter-spacing:.06em}
+.day-date{font-weight:600;font-family:"Cormorant Garamond","Noto Serif Thai",serif;font-size:18px}
+.day-title{flex:1;min-width:120px;border:none;background:transparent;padding:4px 6px;border-radius:6px;color:var(--muted)}
+.day-title:focus{outline:1px solid var(--line);background:var(--field);color:var(--ink)}
+.day-sum{font-size:13px;color:var(--muted)}
+.items{padding:6px 0}
+.item{display:grid;grid-template-columns:56px 34px 1fr auto;gap:12px;padding:9px 18px;align-items:start}
+.aicon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid currentColor;background:color-mix(in srgb,currentColor 13%,transparent);position:relative}
+.aicon .icon{width:18px;height:18px}
+.item.done .aicon{opacity:.55}
+.aicon .ok{position:absolute;right:-4px;bottom:-4px;width:15px;height:15px;border-radius:50%;background:var(--gold-grad);color:var(--on-accent);font-size:10px;font-weight:700;display:grid;place-items:center;border:1.5px solid var(--card)}
+.iconpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;margin-top:6px}
+.iconpick button{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--muted);cursor:pointer;display:grid;place-items:center}
+.iconpick button.on{border-color:var(--teal);color:var(--gold);background:var(--teal-2)}
+.iconpick button.auto{font-size:11px;grid-column:span 2}
+.item:hover{background:rgba(201,164,92,.05)}
+.item .time{font-variant-numeric:tabular-nums;font-weight:600;font-size:15px;padding-top:5px;color:var(--gold);font-family:"Cormorant Garamond",serif}
+.item .time.none{color:var(--muted);font-weight:400}
+.item .pin{width:12px;height:12px;border-radius:50%;margin-top:6px;border:2px solid var(--card);box-shadow:0 0 0 1px currentColor;background:currentColor}
+.item .title{font-weight:500}
+.item.done .title{text-decoration:line-through;color:var(--muted)}
+.item .sub{font-size:13px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+.item .note{font-size:13px;color:var(--muted);margin-top:3px;white-space:pre-wrap}
+.item .acts{display:flex;gap:2px;opacity:.35}
+.item:hover .acts{opacity:1}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:1px 9px;border-radius:99px;border:1px solid currentColor;background:transparent;letter-spacing:.03em}
+.day-foot{display:flex;gap:6px;padding:8px 16px 12px;flex-wrap:wrap}
+.iconbtn{border:none;background:none;cursor:pointer;padding:4px;border-radius:6px;color:var(--muted);display:inline-grid;place-items:center}
+.iconbtn:hover{background:var(--teal-2);color:var(--ink)}
+.cb{width:18px;height:18px;accent-color:#c9a45c;cursor:pointer}
+/* budget */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.panel{padding:18px}
+.bar-row{display:grid;grid-template-columns:110px 1fr 100px;gap:10px;align-items:center;margin:8px 0;font-size:14px}
+.bar{height:8px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.progress{height:10px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.progress i{display:block;height:100%;background:var(--gold-grad)}
+.progress i.over{background:var(--coral)}
+/* checklist */
+.check{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed var(--line)}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+.check span{flex:1}
+.addrow{display:flex;gap:8px;margin-top:10px}
+input.txt,select.txt,textarea.txt{width:100%;border:1px solid var(--line);background:var(--field);border-radius:10px;padding:9px 12px}
+input.txt:focus,select.txt:focus,textarea.txt:focus{outline:2px solid var(--teal-2);border-color:var(--teal)}
+textarea.txt{resize:vertical}
+label.f{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(5,5,8,.7);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:40px 14px;z-index:20;overflow-y:auto}
+.modal{width:100%;max-width:560px;padding:22px}
+.modal.wide{max-width:820px}
+.modal h3{font-size:24px;margin-bottom:6px}
+.modal{border-color:rgba(201,164,92,.35)}
+.modal .hint{color:var(--muted);font-size:13px;margin:0 0 8px}
+.modal .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.drop{border:1.5px dashed var(--line);border-radius:12px;padding:14px;text-align:center;color:var(--muted);font-size:14px;margin-top:10px;cursor:pointer}
+.drop.over{border-color:var(--teal);background:var(--teal-2)}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.thumbs div{position:relative}
+.thumbs img{width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.thumbs button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:var(--coral);color:var(--on-accent);cursor:pointer;font-size:12px;line-height:1}
+.preview{max-height:340px;overflow:auto;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px;font-size:14px}
+.preview .pd{font-weight:600;margin-top:8px}
+.preview .pd:first-child{margin-top:0}
+.preview .pi{padding-left:12px;color:var(--ink)}
+.preview .pi em{color:var(--muted);font-style:normal}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:none;background:transparent;padding:6px 14px;cursor:pointer}
+.seg button.on{background:var(--gold-grad);color:var(--on-accent)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gold-grad);color:var(--on-accent);font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.4);padding:10px 16px;border-radius:10px;z-index:30;font-size:14px}
+.err{color:var(--coral);font-size:13px;margin-top:8px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.back{margin-bottom:10px}
+.notesbar{display:flex;align-items:center;gap:10px;padding:10px 16px;margin-bottom:12px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.notesbar .icon{color:var(--gold)}
+.labrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.homenav{display:flex;gap:6px;margin-bottom:18px}
+.homenav button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:8px 18px;cursor:pointer;letter-spacing:.03em}
+.homenav button.on{background:var(--gold-grad);color:var(--on-accent);border-color:transparent;font-weight:600}
+.mapcard{padding:0;overflow:hidden}
+.mapbox{min-height:240px;position:relative}
+.maploading{padding:60px 20px;text-align:center;color:var(--muted)}
+svg.map{display:block;width:100%;height:auto;background:radial-gradient(ellipse at 50% 40%,#151a22,#0c0e12);touch-action:none;cursor:grab}
+svg.map:active{cursor:grabbing}
+svg.map .sphere{fill:#0e1319;stroke:rgba(201,164,92,.25);stroke-width:.6}
+svg.map .grat{fill:none;stroke:rgba(255,255,255,.035);stroke-width:.5}
+svg.map .sea{fill:#0e1319}
+svg.map .c{fill:#232731;stroke:#363b46;stroke-width:.35;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .15s}
+svg.map .c:hover{fill:#2d323e}
+svg.map .c.p{fill:rgba(201,164,92,.16);stroke:rgba(224,196,134,.7);stroke-dasharray:3 2}
+svg.map .c.v{fill:#b48f4c;stroke:#f0d9a3;stroke-width:.6}
+svg.map .c.v:hover{fill:#c9a45c}
+svg.map .c.dim{fill:#1a1d24;stroke:#2a2e37}
+svg.map .c.sel{fill:#2a2f3a;stroke:rgba(224,196,134,.8);stroke-width:1}
+svg.map .c.sel.v{fill:rgba(201,164,92,.28)}
+svg.map .c.land{fill:#232731;cursor:default}
+svg.map .badge circle{fill:#16130d;stroke:#f0d9a3;stroke-width:1.6}
+svg.map .badge path,svg.map .pin .tick{fill:none;stroke:#f0d9a3;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+svg.map .pin .halo{fill:rgba(201,164,92,.18)}
+svg.map .pin .dot{fill:#0d0e11;stroke:#e0c486;stroke-width:1.6}
+svg.map .pin.v .dot{fill:url(#none);fill:#b48f4c;stroke:#f0d9a3}
+svg.map .pin.v .tick{stroke:#16130d;stroke-width:2.2}
+svg.map .pin.s .dot{stroke:var(--c-stay)}
+svg.map .pin.s.v .dot{fill:#8f78ad}
+svg.map .pin:hover .halo{fill:rgba(201,164,92,.4)}
+svg.map .route{fill:none;stroke:rgba(224,196,134,.55);stroke-width:1.6px;stroke-dasharray:4 4}
+.jhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 10px}
+.okbadge{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 8px;border-radius:99px;background:var(--gold-grad);color:var(--on-accent);font-size:13px;font-weight:700;vertical-align:3px;font-family:"IBM Plex Sans Thai",sans-serif}
+.clist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.cchip{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:8px 14px 8px 8px;cursor:pointer;text-align:left}
+.cchip:hover{border-color:var(--teal)}
+.cchip .cmark{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:1px dashed var(--line);color:var(--muted);font-weight:700}
+.cchip.v .cmark{background:var(--gold-grad);color:var(--on-accent);border:none}
+.cchip b{display:block;font-weight:600}
+.cchip small{color:var(--muted);font-size:12px}
+.pininfo{padding:14px 16px;margin-top:10px}
+.pininfo .pi-name{font-family:"Cormorant Garamond","Noto Serif Thai",serif;font-size:20px;font-weight:600}
+.pininfo .meta{color:var(--muted);font-size:13px}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:4px 14px;margin-top:10px}
+.pl{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px dashed rgba(201,164,92,.12);cursor:pointer;font-size:14px}
+.pl-n{flex:1}
+.pl.v .pl-n{color:var(--gold)}
+.pl-d{font-size:12px;color:var(--muted)}
+.stay-row{display:flex;align-items:center;gap:8px;padding:9px 18px;background:linear-gradient(90deg,rgba(179,155,208,.14),rgba(179,155,208,.03));border-bottom:1px solid var(--line);font-size:14px;flex-wrap:wrap}
+.stay-row.none{background:transparent;color:var(--muted)}
+.stay-row b{font-weight:600}
+.pinbtn{display:inline-flex;align-items:center;gap:4px;font-size:13px;padding:3px 11px;border-radius:99px;border:1px solid var(--line);background:transparent;text-decoration:none;color:var(--ink);white-space:nowrap}
+.pinbtn:hover{border-color:var(--teal);color:var(--teal)}
+.pinbtn.go{background:var(--gold-grad);border-color:transparent;color:var(--on-accent);font-weight:500}
+.pinbtn.go:hover{color:var(--on-accent);filter:brightness(1.08)}
+.stays-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.stay-chip{flex:none;padding:10px 12px;min-width:180px;cursor:pointer;border-left:4px solid var(--c-stay)}
+.stay-chip:hover{border-color:var(--c-stay)}
+.stay-chip .d{font-size:12px;color:var(--muted)}
+.stay-chip .n{font-weight:600;font-size:14px}
+.stay-card{padding:16px;margin-bottom:10px;display:grid;grid-template-columns:86px 1fr auto;gap:14px;align-items:start}
+.stay-card .night{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;text-align:center;padding:8px 4px}
+.stay-card .night b{display:block;font-size:30px;color:var(--gold);font-family:"Cormorant Garamond",serif;line-height:1.1}
+.stay-card .night span{font-size:12px;color:var(--muted)}
+.stay-card h3{font-size:20px}
+.stay-card .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.stay-card .links{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.gap-warn{padding:10px 14px;margin-bottom:10px;border:1px dashed var(--coral);border-radius:12px;color:var(--coral);font-size:14px}
+@media (max-width:700px){.stay-card{grid-template-columns:64px 1fr}.stay-card .acts{grid-column:2}}
+@media (max-width:700px){
+  .hero,.grid2,.frow,.frow3{grid-template-columns:1fr}
+  .item{grid-template-columns:44px 34px 1fr;gap:10px;padding:9px 12px}
+  .item .acts{grid-column:3;opacity:1}
+  .bar-row{grid-template-columns:90px 1fr 80px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><svg class="icon" style="width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
+    <div><h1>สมุดแผนเที่ยว</h1><div class="sub">จัดแผนเที่ยวรายวัน งบประมาณ และของที่ต้องเตรียม</div></div>
+    <div class="spacer"></div>
+    <div class="sync" id="sync"><span class="dot"></span><span>กำลังเชื่อมต่อ…</span></div>
+  </header>
+  <main id="app"></main>
+</div>
+<div id="modal-root"></div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------- constants ---------- */
+const CATS = {
+  sight:{label:"เที่ยวชม",color:"var(--c-sight)"},
+  food:{label:"กิน/ดื่ม",color:"var(--c-food)"},
+  move:{label:"เดินทาง",color:"var(--c-move)"},
+  stay:{label:"ที่พัก",color:"var(--c-stay)"},
+  shop:{label:"ช้อปปิ้ง",color:"var(--c-shop)"},
+  other:{label:"อื่นๆ",color:"var(--c-other)"}
+};
+const CURRENCIES=["THB","JPY","KRW","USD","EUR","CNY","TWD","HKD","SGD","MYR","VND","GBP","AUD"];
+const TH_DAYS=["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
+const TH_MONTHS=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const LS_KEY="trip-planner-v1";
+const ICONS={
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+  up:'<path d="m18 15-6-6-6 6"/>',
+  down:'<path d="m6 9 6 6 6-6"/>',
+  map:'<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
+  route:'<circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/>',
+  import:'<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
+  copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+  back:'<path d="m15 18-6-6 6-6"/>',
+  sort:'<path d="M3 6h13M3 12h9M3 18h5M17 8v12M14 17l3 3 3-3"/>',
+  spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/><path d="M19 17l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z"/>',
+  move:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  bed:'<path d="M2 20V8M22 20v-6a3 3 0 0 0-3-3H10v6"/><path d="M2 17h20"/><circle cx="6" cy="12" r="2"/>',
+  nav:'<path d="m3 11 18-8-8 18-2-8Z"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'
+};
+const ic=(n,extra="")=>`<svg class="icon" ${extra} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]||""}</svg>`;
+
+/* ---------- helpers ---------- */
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+function parseISO(s){ if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null; const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function toISO(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function addDays(s,n){ const d=parseISO(s); if(!d) return ""; d.setDate(d.getDate()+n); return toISO(d); }
+function fmtDate(s,withDay=true){ const d=parseISO(s); if(!d) return ""; return (withDay?TH_DAYS[d.getDay()]+" ":"")+d.getDate()+" "+TH_MONTHS[d.getMonth()]+" "+String(d.getFullYear()+543).slice(-2); }
+function daysBetween(a,b){ const A=parseISO(a),B=parseISO(b); if(!A||!B) return 0; return Math.round((B-A)/864e5); }
+function money(n,cur){ n=Number(n)||0; return n.toLocaleString("th-TH",{maximumFractionDigits:2})+" "+(cur||""); }
+function timeKey(t){ if(!t) return 9999; const m=/^(\d{1,2}):(\d{2})/.exec(t); return m?(+m[1])*60+(+m[2]):9999; }
+function normTime(t){ if(!t) return ""; const m=/(\d{1,2})[:.](\d{2})/.exec(String(t)); return m?String(Math.min(23,+m[1])).padStart(2,"0")+":"+m[2]:""; }
+const isUrl=s=>/^https?:\/\//i.test(String(s||"").trim());
+function mapsLink(q){ q=String(q||"").trim(); return isUrl(q)?q:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q); }
+function navLink(q){ q=String(q||"").trim(); return isUrl(q)?q:"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(q); }
+function stayQuery(st){ return st.map||[st.name,st.address].filter(Boolean).join(" "); }
+function stayForDay(trip,di){ return (trip.stays||[]).find(s=>di>=s.startDay&&di<s.startDay+s.nights); }
+function stayRange(trip,s){
+  if(trip.start){ const a=addDays(trip.start,s.startDay), b=addDays(trip.start,s.startDay+s.nights); return fmtDate(a,false)+" – "+fmtDate(b,false); }
+  return "คืนวันที่ "+(s.startDay+1)+(s.nights>1?"–"+(s.startDay+s.nights):"");
+}
+function pinBtns(q,label){ if(!q) return ""; return `<a class="pinbtn" href="${esc(mapsLink(q))}" target="_blank" rel="noopener">${ic("map",'style="width:13px;height:13px"')} ${esc(label||"ดูบนแผนที่")}</a><a class="pinbtn go" href="${esc(navLink(q))}" target="_blank" rel="noopener">${ic("nav",'style="width:13px;height:13px"')} นำทาง</a>`; }
+function routeLink(places){ return "https://www.google.com/maps/dir/"+places.map(p=>encodeURIComponent(p)).join("/"); }
+function guessCat(text){
+  const t=(text||"").toLowerCase();
+  if(/บิน|เครื่องบิน|สนามบิน|รถไฟ|ชินคันเซ็น|รถบัส|บัส|แท็กซี่|taxi|flight|train|bus|airport|transfer|เดินทาง|นั่งรถ|ขึ้นรถ|เรือ|ferry|subway|mrt|bts|jr /.test(t)) return "move";
+  if(/โรงแรม|ที่พัก|เช็คอิน|เช็กอิน|check.?in|check.?out|เช็คเอาท์|hotel|hostel|ryokan|เรียวกัง|airbnb|พักผ่อน|นอน/.test(t)) return "stay";
+  if(/กิน|อาหาร|ร้าน|คาเฟ่|cafe|café|coffee|กาแฟ|ข้าว|มื้อ|lunch|dinner|breakfast|brunch|ราเมง|ซูชิ|บุฟเฟ่ต์|ขนม|ดื่ม|บาร์|bar|izakaya|ปิ้งย่าง|street food/.test(t)) return "food";
+  if(/ช้อป|ช็อป|shopping|mall|ห้าง|ตลาด|market|outlet|เอาท์เล็ท|ซื้อของ|ของฝาก|ดองกี้|don quijote/.test(t)) return "shop";
+  return "sight";
+}
+function newTrip(p={}){
+  return Object.assign({id:uid(),name:"ทริปใหม่",destination:"",start:"",end:"",currency:"THB",travelers:1,budget:0,days:[],stays:[],checklist:[],notes:"",created:Date.now(),updated:Date.now()},p);
+}
+function syncDaysToRange(trip){
+  if(!trip.start) return;
+  const end=trip.end&&daysBetween(trip.start,trip.end)>=0?trip.end:trip.start;
+  const n=daysBetween(trip.start,end)+1;
+  while(trip.days.length<n) trip.days.push({id:uid(),title:"",items:[]});
+  // never delete days with items; trim only empty trailing days
+  while(trip.days.length>n && trip.days[trip.days.length-1].items.length===0) trip.days.pop();
+  trip.days.forEach((d,i)=>{ d.date=addDays(trip.start,i); });
+}
+function tripTotals(trip){
+  const byCat={}; let total=0, items=0;
+  trip.days.forEach(d=>d.items.forEach(it=>{ items++; const c=Number(it.cost)||0; total+=c; byCat[it.cat||"other"]=(byCat[it.cat||"other"]||0)+c; }));
+  (trip.stays||[]).forEach(s=>{ const c=Number(s.cost)||0; total+=c; byCat.stay=(byCat.stay||0)+c; });
+  return {total,byCat,items};
+}
+function sanitizeTrip(raw){
+  const t=newTrip();
+  if(!raw||typeof raw!=="object") return t;
+  ["id","name","destination","notes"].forEach(k=>{ if(typeof raw[k]==="string") t[k]=raw[k]; });
+  if(typeof raw.start==="string" && parseISO(raw.start)) t.start=raw.start;
+  if(typeof raw.end==="string" && parseISO(raw.end)) t.end=raw.end;
+  if(typeof raw.currency==="string") t.currency=raw.currency.toUpperCase().slice(0,5);
+  t.travelers=Math.max(1,parseInt(raw.travelers)||1);
+  t.budget=Number(raw.budget)||0;
+  t.created=Number(raw.created)||Date.now(); t.updated=Number(raw.updated)||Date.now();
+  t.days=(Array.isArray(raw.days)?raw.days:[]).map(d=>({
+    id:typeof d.id==="string"?d.id:uid(),
+    title:typeof d.title==="string"?d.title:"",
+    date:typeof d.date==="string"&&parseISO(d.date)?d.date:"",
+    items:(Array.isArray(d.items)?d.items:[]).map(it=>({
+      id:typeof it.id==="string"?it.id:uid(),
+      time:normTime(it.time), title:String(it.title||"").slice(0,300),
+      place:String(it.place||"").slice(0,300),
+      cat:CATS[it.cat]?it.cat:guessCat((it.title||"")+" "+(it.place||"")),
+      cost:Number(it.cost)||0, note:String(it.note||"").slice(0,2000), done:!!it.done, ...(typeof it.icon==="string"&&it.icon&&/^[a-z]+$/.test(it.icon)?{icon:it.icon}:{}),
+      ...(cleanLL(it)||parseLL(it.place)||{})
+    }))
+  }));
+  t.stays=(Array.isArray(raw.stays)?raw.stays:[]).map(s=>({
+    id:typeof s.id==="string"?s.id:uid(), name:String(s.name||"").slice(0,200), address:String(s.address||"").slice(0,300),
+    map:isUrl(s.map)?String(s.map).trim().slice(0,1000):"", startDay:Math.max(0,parseInt(s.startDay)||0), nights:Math.max(1,parseInt(s.nights)||1),
+    cost:Number(s.cost)||0, booking:String(s.booking||"").slice(0,200), note:String(s.note||"").slice(0,1000), ...(typeof s.visited==="boolean"?{visited:s.visited}:{}),
+    ...(cleanLL(s)||parseLL(s.map)||{})
+  })).filter(s=>s.name).sort((a,b)=>a.startDay-b.startDay);
+  t.checklist=(Array.isArray(raw.checklist)?raw.checklist:[]).map(c=>typeof c==="string"?{id:uid(),text:c,done:false}:{id:typeof c.id==="string"?c.id:uid(),text:String(c.text||""),done:!!c.done}).filter(c=>c.text);
+  if(t.start) syncDaysToRange(t);
+  return t;
+}
+
+/* ---------- storage: claude db (per-user, private) with localStorage fallback ---------- */
+const store={
+  mode:"local", db:null, uidv:null, trips:{}, journal:{countries:{}}, jTimer:null, timers:{}, writing:{}, pending:{},
+  setStatus(kind,text){ const el=$("#sync"); el.innerHTML=`<span class="dot ${kind}"></span><span>${esc(text)}</span>`; },
+  loadLocal(){ try{ const raw=JSON.parse(localStorage.getItem(LS_KEY)||"{}"); Object.values(raw).forEach(t=>{ const s=sanitizeTrip(t); this.trips[s.id]=s; }); }catch(e){}
+    try{ const j=JSON.parse(localStorage.getItem(LS_KEY+"-journal")||"null"); if(j&&j.countries) this.journal=j; }catch(e){} },
+  saveJournal(){ try{ localStorage.setItem(LS_KEY+"-journal",JSON.stringify(this.journal)); }catch(e){}
+    if(this.mode!=="db") return; this.jPending=true; clearTimeout(this.jTimer);
+    this.jTimer=setTimeout(async()=>{ try{ await this.col().doc("journal").set({journal:JSON.parse(JSON.stringify(this.journal))}); }catch(e){} this.jPending=false; },600); },
+  saveLocal(){ try{ localStorage.setItem(LS_KEY,JSON.stringify(this.trips)); }catch(e){} },
+  col(){ return this.db.collection("data/users/"+this.uidv); },
+  async init(){
+    this.loadLocal(); render();
+    let db=null,user=null;
+    try{ if(window.claude&&claude.use){ [db,user]=await Promise.all([claude.use("db"),claude.use("user")]); } }catch(e){}
+    let id=null; try{ id=user?await user.id():null; }catch(e){}
+    if(!db||!id){ this.setStatus("warn","บันทึกในเบราว์เซอร์นี้"); return; }
+    this.db=db; this.uidv=id; this.mode="db";
+    let gotFirst=false;
+    const timer=setTimeout(()=>{ if(!gotFirst) this.setStatus("warn","ยังเชื่อมต่อไม่ได้ ใช้ข้อมูลในเครื่องไปก่อน"); },10000);
+    const localCopy=Object.assign({},this.trips);
+    this.col().onSnapshot(snap=>{
+      const fromServer={};
+      snap.docs.forEach(d=>{ if(d.exists){ const body=d.data(); if(body&&body.trip){ fromServer[d.id]=sanitizeTrip(body.trip); } else if(body&&body.journal&&d.id==="journal"&&!this.jPending){ const c={}; Object.keys(body.journal.countries||{}).forEach(k=>{ if(body.journal.countries[k]) c[String(k).slice(0,12)]=true; }); this.journal={countries:c}; } } });
+      // keep local edits that are waiting to be written
+      Object.keys(this.pending).forEach(k=>{ if(this.trips[k]) fromServer[k]=this.trips[k]; });
+      this.trips=fromServer;
+      if(!snap.metadata.fromCache && !gotFirst){
+        gotFirst=true; clearTimeout(timer);
+        // one-time migration of trips that existed only in this browser
+        Object.values(localCopy).forEach(t=>{ if(!fromServer[t.id]){ this.trips[t.id]=t; this.queue(t.id,0); } });
+        this.setStatus("ok","บันทึกในบัญชีของคุณแล้ว");
+      }
+      this.saveLocal(); render(true);
+    },err=>{ clearTimeout(timer); this.mode="local"; this.setStatus("warn","บันทึกในเบราว์เซอร์นี้"); });
+  },
+  put(trip){ trip.updated=Date.now(); this.trips[trip.id]=trip; this.saveLocal(); this.queue(trip.id,700); },
+  queue(id,delay){
+    if(this.mode!=="db") return;
+    this.pending[id]=true; clearTimeout(this.timers[id]);
+    this.timers[id]=setTimeout(()=>this.flush(id),delay);
+  },
+  async flush(id){
+    if(this.writing[id]){ this.queue(id,400); return; }
+    const t=this.trips[id]; if(!t){ delete this.pending[id]; return; }
+    this.writing[id]=true; this.setStatus("","กำลังบันทึก…"); const stamp=t.updated;
+    try{ await this.col().doc(id).set({trip:JSON.parse(JSON.stringify(t)),updated:t.updated}); this.setStatus("ok","บันทึกในบัญชีของคุณแล้ว"); }
+    catch(e){
+      if(e&&e.code==="unavailable"){ setTimeout(()=>this.flush(id),1500+Math.random()*1500); }
+      else if(e&&e.code==="quota_exceeded"){ toast("พื้นที่เก็บข้อมูลเต็ม ลองลบทริปเก่าที่ไม่ใช้แล้ว"); }
+      else { this.mode="local"; this.setStatus("warn","บันทึกในเบราว์เซอร์นี้"); }
+    }
+    finally{ this.writing[id]=false; if(!this.trips[id]||this.trips[id].updated===stamp) delete this.pending[id]; }
+  },
+  async remove(id){
+    delete this.trips[id]; delete this.pending[id]; clearTimeout(this.timers[id]); this.saveLocal();
+    if(this.mode==="db"){ try{ await this.col().doc(id).delete(); }catch(e){} }
+  }
+};
+
+/* ---------- AI (Claude) ---------- */
+let samplerP=null;
+function getSampler(){ if(!samplerP){ samplerP=(async()=>{ try{ return window.claude&&claude.use?await claude.use("sample"):null; }catch(e){ return null; } })(); } return samplerP; }
+const NOTE_RULES=`เขียนหมายเหตุภาษาไทยสั้นๆ 1–2 ประโยคต่อกิจกรรม แบบที่ไกด์ที่รู้จริงจะบอกเพื่อน: ช่วงเวลาที่ควรไป ของที่ควรลอง มารยาท/กฎของสถานที่ เรื่องที่ควรระวัง หรือทริกที่ช่วยประหยัดเวลา คั่นแต่ละประเด็นด้วย " · "
+ห้ามใส่ราคาหรือเวลาเปิดปิดแบบเจาะจงถ้าไม่มั่นใจ ห้ามแต่งข้อมูลที่ไม่แน่ใจ ถ้าไม่มีอะไรมีประโยชน์จริงให้ข้ามกิจกรรมนั้น คำนึงถึงฤดูกาลจากวันที่เดินทาง`;
+const AI_INSTR=`คุณคือผู้ช่วยแปลงแผนเที่ยวให้เป็นข้อมูลโครงสร้าง อ่านแผนเที่ยวที่ผู้ใช้ให้มา (ข้อความ และ/หรือรูปภาพ) แล้วตอบกลับเป็น JSON อย่างเดียว ไม่มีข้อความอื่น ตามรูปแบบนี้:
+{"name":"ชื่อทริปสั้นๆ","destination":"เมือง/ประเทศ","start":"YYYY-MM-DD หรือ \"\"","end":"YYYY-MM-DD หรือ \"\"","currency":"รหัสสกุลเงิน 3 ตัว เช่น THB JPY","travelers":1,
+"days":[{"title":"หัวข้อของวัน เช่น เมือง/ธีม","items":[{"time":"HH:MM หรือ \"\"","title":"กิจกรรม","place":"ชื่อสถานที่ที่ค้นหาบนแผนที่ได้ หรือ \"\"","cat":"sight|food|move|stay|shop|other","cost":0,"note":"รายละเอียดเพิ่มเติม","lat":null,"lng":null}]}],
+"stays":[{"name":"ชื่อที่พัก","address":"ที่อยู่/ย่าน ถ้ามี","startDay":0,"nights":1,"cost":0,"booking":"เลขที่จองถ้ามี","lat":null,"lng":null}],
+"checklist":["ของที่ต้องเตรียม/สิ่งที่ต้องจอง ถ้าแผนกล่าวถึง"]}
+note: ถ้าแผนมีรายละเอียดให้ใช้ตามแผน ถ้าไม่มี ให้เขียนเคล็ดลับตามกติกานี้ — ${NOTE_RULES}
+lat/lng: พิกัดโดยประมาณของสถานที่ (ทศนิยม 4 ตำแหน่ง) ถ้ารู้ตำแหน่งได้ค่อนข้างแน่ใจ ไม่แน่ใจใส่ null
+stays: startDay คือลำดับวันที่เช็กอิน นับจาก 0 (วันแรก=0), nights คือจำนวนคืน; ใส่เฉพาะที่พักที่แผนกล่าวถึง ค่าที่พักให้ใส่ใน stays ไม่ต้องซ้ำใน items
+กติกา: เรียงวันตามลำดับในแผน หนึ่งวัน = หนึ่งรายการใน days, เก็บทุกกิจกรรม ห้ามเพิ่มกิจกรรมที่ไม่มีในแผน, cost เป็นตัวเลขในสกุลเงิน currency (ไม่รู้ใส่ 0), ถ้ารู้ปีไม่ครบให้เดาจากบริบท ถ้าไม่มีวันที่ให้ใส่ "" , คงภาษาเดิมของแผน`;
+async function aiParse(text,images,hintStart){
+  const sample=await getSampler(); if(!sample) throw {code:"not_granted"};
+  const opts={modelTier:"default",cache:false};
+  if(images&&images.length){ let lim=null; try{ lim=await sample.limits(); }catch(e){} if(lim&&lim.images) opts.images=images; }
+  const input=AI_INSTR+(hintStart?`\nวันเริ่มทริปที่ผู้ใช้ระบุ: ${hintStart}`:"")+`\nวันนี้คือ ${toISO(new Date())}\n\n--- แผนเที่ยว ---\n`+(text||"(ดูจากรูปภาพที่แนบ)");
+  let v;
+  if(typeof sample.json==="function"){ v=await sample.json(input,opts); }
+  else { const r=await sample(input,opts); const m=/\{[\s\S]*\}/.exec(r.text||""); v=JSON.parse(m?m[0]:"{}"); }
+  if(typeof v==="string"){ const m=/\{[\s\S]*\}/.exec(v); v=JSON.parse(m?m[0]:"{}"); }
+  return v;
+}
+
+/* ---------- AI travel notes ---------- */
+function itemsMissingNotes(t){ const out=[]; t.days.forEach((d,di)=>d.items.forEach(it=>{ if(!String(it.note||"").trim()) out.push({it,d,di}); })); return out; }
+async function aiNotes(t,list,btn){
+  const sample=await getSampler(); if(!sample){ toast("AI ไม่พร้อมใช้ในหน้านี้"); return 0; }
+  if(!list.length) return 0;
+  const label=btn?btn.innerHTML:"";
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="spin"></span> AI กำลังเขียนหมายเหตุ…'; }
+  let n=0;
+  try{
+    for(let i=0;i<list.length;i+=30){
+      const chunk=list.slice(i,i+30).map(x=>({id:x.it.id,date:x.d.date||("วันที่ "+(x.di+1)),time:x.it.time,title:x.it.title,place:isUrl(x.it.place)?"":x.it.place,type:CATS[x.it.cat]?.label}));
+      const prompt=`ทริป: ${t.name}${t.destination?" ปลายทาง "+t.destination:""}${t.start?" วันที่ "+t.start+" ถึง "+t.end:""} จำนวน ${t.travelers} คน\n${NOTE_RULES}\nตอบเป็น JSON array เท่านั้น รูปแบบ [{"id":"...","note":"..."}]\n\nกิจกรรม:\n`+JSON.stringify(chunk);
+      let v; if(typeof sample.json==="function") v=await sample.json(prompt,{modelTier:"default",cache:false}); else { const r=await sample(prompt,{modelTier:"default",cache:false}); const m=/\[[\s\S]*\]/.exec(r.text||""); v=JSON.parse(m?m[0]:"[]"); }
+      if(!Array.isArray(v)&&v&&Array.isArray(v.notes)) v=v.notes;
+      (Array.isArray(v)?v:[]).forEach(r=>{ const x=list.find(y=>y.it.id===r.id); const note=String(r&&r.note||"").trim().slice(0,600); if(x&&note&&!String(x.it.note||"").trim()){ x.it.note=note; n++; } });
+      if(btn) btn.innerHTML=`<span class="spin"></span> เขียนแล้ว ${n} รายการ…`;
+    }
+    if(n) store.put(t);
+  }catch(e){ toast(e&&e.code==="rate_limited"?"ใช้งาน AI ถี่เกินไป รอสักครู่แล้วลองใหม่":"AI เขียนหมายเหตุไม่สำเร็จ ลองอีกครั้ง"); }
+  if(btn&&document.body.contains(btn)){ btn.disabled=false; btn.innerHTML=label; }
+  return n;
+}
+
+/* ---------- rule-based parser (works offline) ---------- */
+function basicParse(text){
+  const lines=String(text||"").split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const out={name:"",destination:"",start:"",end:"",currency:"",days:[],checklist:[]};
+  let cur=null; const dates=[];
+  const dayRe=/^(?:[#*\s]*)(?:วันที่|วัน|day|d)\s*(\d{1,2})\b[\s:.\-–—)]*(.*)$/i;
+  const dateRe=/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})|(\d{1,2})[/.](\d{1,2})[/.](\d{2,4})/;
+  const thMonthRe=new RegExp("(\\d{1,2})\\s*("+TH_MONTHS.map(m=>m.replace(/\./g,"\\.?")).join("|")+"|มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม)\\s*(\\d{2,4})?");
+  const fullMonths=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+  function toYear(y){ y=+y; if(y<100) y+=y>=50?2500:2000; if(y>2400) y-=543; return y; }
+  function findDate(s){
+    let m=dateRe.exec(s);
+    if(m){ if(m[1]) return toISO(new Date(+m[1]>2400?+m[1]-543:+m[1],+m[2]-1,+m[3])); return toISO(new Date(toYear(m[6]),+m[5]-1,+m[4])); }
+    m=thMonthRe.exec(s);
+    if(m){ let mi=fullMonths.indexOf(m[2]); if(mi<0) mi=TH_MONTHS.findIndex(x=>x.replace(/\./g,"")===m[2].replace(/\./g,"")); if(mi>=0){ const y=m[3]?toYear(m[3]):new Date().getFullYear(); return toISO(new Date(y,mi,+m[1])); } }
+    return "";
+  }
+  const costRe=/(?:฿\s*)?(\d[\d,]*(?:\.\d+)?)\s*(บาท|฿|thb|เยน|yen|¥|jpy|วอน|won|krw|usd|\$|ดอลลาร์|ยูโร|eur|€)/i;
+  const curMap={"บาท":"THB","฿":"THB","thb":"THB","เยน":"JPY","yen":"JPY","¥":"JPY","jpy":"JPY","วอน":"KRW","won":"KRW","krw":"KRW","usd":"USD","$":"USD","ดอลลาร์":"USD","ยูโร":"EUR","eur":"EUR","€":"EUR"};
+  let inChecklist=false;
+  for(let raw of lines){
+    let l=raw.replace(/^[-•*·▪︎►>]+\s*/,"").replace(/\*\*/g,"");
+    if(/^(เช็กลิสต์|เช็คลิสต์|checklist|ของที่ต้องเตรียม|สิ่งที่ต้องเตรียม|packing)/i.test(l)){ inChecklist=true; continue; }
+    const dm=dayRe.exec(l); const isDateHeader=!dm && findDate(l) && !/^\d{1,2}[:.]\d{2}/.test(l) && l.length<60;
+    if(dm||isDateHeader){
+      inChecklist=false;
+      const rest=dm?dm[2]:l; const dt=findDate(l);
+      cur={title:rest.replace(dateRe,"").replace(thMonthRe,"").replace(/^[\s:.\-–—()|]+|[\s:.\-–—()|]+$/g,""),date:dt,items:[]};
+      if(dt) dates.push(dt);
+      out.days.push(cur); continue;
+    }
+    if(inChecklist){ out.checklist.push(l.replace(/^\[.?\]\s*/,"")); continue; }
+    if(!out.name && !cur && !/^\d{1,2}[:.]\d{2}/.test(l)){ out.name=l.replace(/^#+\s*/,"").slice(0,80); continue; }
+    if(!cur){ cur={title:"",date:"",items:[]}; out.days.push(cur); }
+    const tm=/^(\d{1,2})[:.](\d{2})\s*(?:น\.?)?\s*(?:[-–—~]\s*\d{1,2}[:.]\d{2}\s*(?:น\.?)?)?\s*[-–—:|]?\s*(.*)$/.exec(l);
+    let time="",title=l;
+    if(tm){ time=normTime(tm[1]+":"+tm[2]); title=tm[3]||""; }
+    let cost=0; const cm=costRe.exec(title);
+    if(cm){ cost=Number(cm[1].replace(/,/g,""))||0; if(!out.currency) out.currency=curMap[cm[2].toLowerCase()]||""; title=title.replace(cm[0],"").replace(/[\s(,]+\)?$/,"").trim(); }
+    let note=""; const nm=/^(.*?)\s*[(（](.+)[)）]\s*$/.exec(title); if(nm){ title=nm[1]; note=nm[2]; }
+    if(!title) continue;
+    cur.items.push({time,title,place:"",cat:guessCat(title),cost,note});
+  }
+  out.days=out.days.filter(d=>d.items.length||d.title);
+  if(dates.length){ out.start=dates[0]; out.end=dates[dates.length-1]; }
+  if(!out.name) out.name="แผนเที่ยวที่นำเข้า";
+  return out;
+}
+
+/* ---------- activity icons ---------- */
+const AICONS={
+  plane:{l:"เครื่องบิน",p:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'},
+  train:{l:"รถไฟ",p:'<rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 10h14M9 21l-2-4M15 21l2-4"/><circle cx="9" cy="13.5" r=".9"/><circle cx="15" cy="13.5" r=".9"/>'},
+  bus:{l:"รถบัส",p:'<rect x="4" y="3" width="16" height="15" rx="2"/><path d="M4 10h16M8 21v-3M16 21v-3"/><circle cx="8" cy="14" r=".9"/><circle cx="16" cy="14" r=".9"/>'},
+  boat:{l:"เรือ",p:'<path d="M3 16h18l-2.5 4.5h-13z"/><path d="M12 3v13M12 4.5 18 13h-6"/>'},
+  cable:{l:"กระเช้า",p:'<path d="M3 3l18 4M12 5v4.5"/><rect x="6" y="9.5" width="12" height="11" rx="2"/><path d="M6 14h12"/>'},
+  car:{l:"รถยนต์/แท็กซี่",p:'<path d="M5 17V12l2-5h10l2 5v5"/><path d="M5 12h14"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/>'},
+  luggage:{l:"กระเป๋า",p:'<rect x="6" y="7" width="12" height="13" rx="2"/><path d="M9 7V4h6v3M10 20v1.5M14 20v1.5M10 11v5M14 11v5"/>'},
+  bed:{l:"ที่พัก",p:'<path d="M2 20V8M22 20v-6a3 3 0 0 0-3-3H10v6"/><path d="M2 17h20"/><circle cx="6" cy="12" r="2"/>'},
+  onsen:{l:"ออนเซ็น",p:'<path d="M3 15c0 3 4 5.5 9 5.5s9-2.5 9-5.5"/><path d="M3 15h18"/><path d="M8 11.5c-1.2-1.6 1.2-2.6 0-4.5M12 11.5c-1.2-1.6 1.2-2.6 0-4.5M16 11.5c-1.2-1.6 1.2-2.6 0-4.5"/>'},
+  torii:{l:"ศาลเจ้า",p:'<path d="M2.5 5c6.3 1.6 12.7 1.6 19 0"/><path d="M4.5 9.5h15"/><path d="M7 6.3V21M17 6.3V21M12 7v2.5"/>'},
+  temple:{l:"วัด",p:'<path d="M12 2v3"/><path d="M4 9.5 12 5l8 4.5"/><path d="M5.5 14 12 10.5l6.5 3.5"/><path d="M7 9.5v3M17 9.5v3"/><path d="M3 21h18M7.5 14v7M16.5 14v7"/><path d="M10.5 21v-3.5h3V21"/>'},
+  castle:{l:"ปราสาท",p:'<path d="M4 21V10h2.5V7h2v3h2V5h3v5h2V7h2v3H20v11z"/><path d="M10 21v-3.5a2 2 0 0 1 4 0V21"/>'},
+  museum:{l:"พิพิธภัณฑ์",p:'<path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 21h18"/>'},
+  art:{l:"งานศิลปะ",p:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/><path d="M19 17l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7Z"/>'},
+  park:{l:"สวนสนุก",p:'<circle cx="12" cy="10" r="7"/><path d="M12 3v14M5 10h14M7 5l10 10M17 5 7 15"/><path d="M8 21.5l4-4.5 4 4.5"/>'},
+  tower:{l:"จุดชมวิว",p:'<path d="M12 2v3.5"/><path d="M9 5.5h6l-1 4h-4z"/><path d="M10 9.5 7 21.5M14 9.5l3 12M8.5 15.5h7"/>'},
+  bridge:{l:"สะพาน",p:'<path d="M2 16.5h20M3.5 16.5c2-6.5 15-6.5 17 0M7 16.5v-4.5M12 16.5v-6M17 16.5v-4.5"/>'},
+  mountain:{l:"ภูเขา",p:'<path d="M2 20 9 8l3.5 5.5L15.5 9 22 20z"/><path d="M7.2 11.2 9 12.3l1.8-1.3"/>'},
+  water:{l:"ทะเล/ทะเลสาบ",p:'<path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 13.5c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 19c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>'},
+  tree:{l:"สวน/ธรรมชาติ",p:'<path d="M12 22v-5.5"/><path d="M12 2.5l5 7h-3l4 6.5H6l4-6.5H7z"/>'},
+  bowl:{l:"ราเมง/เส้น",p:'<path d="M3 11.5h18a9 9 0 0 1-18 0z"/><path d="M8 21h8"/><path d="M14.5 2.5 9 11.5M20 4l-7.5 7.5"/>'},
+  fish:{l:"ซูชิ/ซีฟู้ด",p:'<path d="M2 12c3-5 10-6.5 15-2l5-3-1.5 5 1.5 5-5-3c-5 4.5-12 3-15-2z"/><circle cx="7" cy="11.2" r=".9"/>'},
+  skewer:{l:"ปิ้งย่าง/ของทอด",p:'<path d="M3.5 20.5 20.5 3.5"/><circle cx="8.5" cy="15.5" r="2.2"/><circle cx="12.3" cy="11.7" r="2.2"/><circle cx="16.1" cy="7.9" r="2.2"/>'},
+  coffee:{l:"คาเฟ่",p:'<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3v3M12 3v3"/>'},
+  drink:{l:"บาร์/เครื่องดื่ม",p:'<path d="M5 4h14l-7 8z"/><path d="M12 12v8.5M8 20.5h8"/>'},
+  meal:{l:"ร้านอาหาร",p:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10"/><path d="M17.5 3C15.5 3 14.5 6 14.5 10h3v11"/>'},
+  market:{l:"ตลาด",p:'<path d="M3 9l2-5h14l2 5"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v9h14v-9"/><path d="M10 21v-5h4v5"/>'},
+  bag:{l:"ช้อปปิ้ง",p:'<path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>'},
+  camera:{l:"ถ่ายรูป/เที่ยวชม",p:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'},
+  route:{l:"เดินทาง",p:'<circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19h8.5a3.5 3.5 0 0 0 0-7H7a3.5 3.5 0 0 1 0-7h8.5"/>'},
+  pin:{l:"อื่นๆ",p:'<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/>'}
+};
+const ICON_RULES=[
+  ["cable",/กระเช้า|ropeway|cable ?car|gondola/],
+  ["train",/ชินคันเซ็น|shinkansen|รถไฟ|train|romancecar|rapi:?t|keikyu|kintetsu|nankai|\bjr\b|subway|metro|รถไฟฟ้า|\bmrt\b|\bbts\b|สถานี|station|suica/],
+  ["bus",/รถบัส|บัส|\bbus|busta/],
+  ["plane",/สนามบิน|airport|เครื่องบิน|บิน|flight/],
+  ["boat",/ล่องเรือ|เรือ|ferry|cruise|boat/],
+  ["car",/แท็กซี่|taxi|รถเช่า|rent ?a ?car|grab|uber/],
+  ["luggage",/ส่งกระเป๋า|ฝากกระเป๋า|takkyubin|luggage|locker|ล็อกเกอร์/],
+  ["onsen",/ออนเซ็น|onsen|แช่น้ำแร่|hot spring|เรียวกัง|ryokan/],
+  ["bed",/โรงแรม|hotel|ที่พัก|hostel|เช็กอิน|เช็คอิน|check.?in|เช็กเอาท์|เช็คเอาท์|check.?out|airbnb|resort|รีสอร์ท/],
+  ["bowl",/ราเมง|ramen|บะหมี่|อุด้ง|udon|โซบะ|soba|โฮโต|hoto|noodle|ก๋วยเตี๋ยว|ข้าวซอย|pho|เฝอ/],
+  ["fish",/ซูชิ|sushi|ซาชิมิ|ซีฟู้ด|seafood|ปลา|fish|ไคเซ็น|kaisen/],
+  ["skewer",/ยากิโทริ|yakitori|คุชิ|kushi|ทาโกยากิ|takoyaki|ปิ้งย่าง|yakiniku|ยากินิคุ|bbq|บาร์บีคิว|street food/],
+  ["coffee",/คาเฟ่|cafe|café|กาแฟ|coffee|มัทฉะ|matcha|ร้านชา|tea house|ขนม|dessert|ของหวาน/],
+  ["drink",/บาร์|\bbar\b|อิซากายะ|izakaya|สาเก|sake|เบียร์|beer|wine|ไวน์|cocktail|ค็อกเทล/],
+  ["market",/ตลาด|market|ถนนคนเดิน/],
+  ["art",/teamlab|ทีมแล็บ|art ?museum|อาร์ต|exhibition|นิทรรศการ/],
+  ["museum",/พิพิธภัณฑ์|museum|gallery|แกลเลอรี/],
+  ["park",/universal|\busj\b|disney|ดิสนีย์|สวนสนุก|theme park|amusement/],
+  ["castle",/ปราสาท|castle|พระราชวัง|palace/],
+  ["torii",/ศาลเจ้า|shrine|jingu|jinja|taisha|ไทฉะ|อินาริ|inari|โทริอิ|torii/],
+  ["temple",/วัด|temple|[a-z]+-(?:ji|dera|in)\b|ดะระ|เจดีย์|pagoda|พระใหญ่|buddha/],
+  ["tower",/skytree|สกายทรี|tower|ทาวเวอร์|\bsky\b|ชมวิว|จุดชมวิว|viewpoint|observ|ดาดฟ้า/],
+  ["bridge",/สะพาน|bridge/],
+  ["mountain",/ฟูจิ|fuji|ภูเขา|mount|\bmt\.|โอวาคุดานิ|owakudani|ดอย|ม่อน/],
+  ["water",/ทะเลสาบ|lake|ทะเล|beach|ชายหาด|หาด|น้ำตก|waterfall|อ่าว|bay/],
+  ["tree",/สวน|park|garden|ป่า|ไผ่|bamboo|forest|ธรรมชาติ|nature/],
+  ["bag",/ช้อป|ช็อป|shop|mall|ห้าง|outlet|เอาท์เล็ท|ดองกี้|don ?quijote|ginza|ซื้อของ|ของฝาก|souvenir|character street/],
+  ["meal",/กิน|อาหาร|ข้าว|มื้อ|lunch|dinner|breakfast|brunch|restaurant|ร้าน|เทมปุระ|tempura|มงจา|monja|ไคเซกิ|kaiseki|ยูโดฟุ|คามะเมะชิ|บุฟเฟ่ต์|buffet|ชาบู|shabu|สุกี้|wagyu|วากิว/],
+  ["camera",/ถ่ายรูป|photo|สี่แยก|crossing|lawson|ลอว์สัน|เดินเล่น|walk/]
+];
+const CAT_ALLOWED={shop:["bag","market","coffee","art"],food:["bowl","fish","skewer","coffee","drink","market","meal"],stay:["onsen","bed","luggage"],move:["plane","cable","train","bus","boat","car","luggage"]};
+const CAT_DEFAULT={sight:"camera",food:"meal",move:"route",stay:"bed",shop:"bag",other:"pin"};
+function itemIcon(it){
+  if(it.icon&&AICONS[it.icon]) return it.icon;
+  const allowed=CAT_ALLOWED[it.cat];
+  for(const text of [(it.title||"").toLowerCase(), isUrl(it.place)?"":(it.place||"").toLowerCase()]){
+    if(!text) continue;
+    for(const [k,re] of ICON_RULES){ if(allowed&&!allowed.includes(k)) continue; if(re.test(text)) return k; }
+  }
+  return CAT_DEFAULT[it.cat]||"pin";
+}
+const aic=(k,extra="")=>`<svg class="icon" ${extra} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${(AICONS[k]||AICONS.pin).p}</svg>`;
+
+/* ---------- geo: coordinates, countries, maps ---------- */
+const NUM2A2={"533":"AW","004":"AF","024":"AO","660":"AI","248":"AX","008":"AL","020":"AD","784":"AE","032":"AR","051":"AM","016":"AS","010":"AQ","260":"TF","028":"AG","036":"AU","040":"AT","031":"AZ","108":"BI","056":"BE","204":"BJ","535":"BQ","854":"BF","050":"BD","100":"BG","048":"BH","044":"BS","070":"BA","652":"BL","112":"BY","084":"BZ","060":"BM","068":"BO","076":"BR","052":"BB","096":"BN","064":"BT","074":"BV","072":"BW","140":"CF","124":"CA","166":"CC","756":"CH","152":"CL","156":"CN","384":"CI","120":"CM","180":"CD","178":"CG","184":"CK","170":"CO","174":"KM","132":"CV","188":"CR","192":"CU","531":"CW","162":"CX","136":"KY","196":"CY","203":"CZ","276":"DE","262":"DJ","212":"DM","208":"DK","214":"DO","012":"DZ","218":"EC","818":"EG","232":"ER","732":"EH","724":"ES","233":"EE","231":"ET","246":"FI","242":"FJ","238":"FK","250":"FR","234":"FO","583":"FM","266":"GA","826":"GB","268":"GE","831":"GG","288":"GH","292":"GI","324":"GN","312":"GP","270":"GM","624":"GW","226":"GQ","300":"GR","308":"GD","304":"GL","320":"GT","254":"GF","316":"GU","328":"GY","344":"HK","334":"HM","340":"HN","191":"HR","332":"HT","348":"HU","360":"ID","833":"IM","356":"IN","086":"IO","372":"IE","364":"IR","368":"IQ","352":"IS","376":"IL","380":"IT","388":"JM","832":"JE","400":"JO","392":"JP","398":"KZ","404":"KE","417":"KG","116":"KH","296":"KI","659":"KN","410":"KR","414":"KW","418":"LA","422":"LB","430":"LR","434":"LY","662":"LC","438":"LI","144":"LK","426":"LS","440":"LT","442":"LU","428":"LV","446":"MO","663":"MF","504":"MA","492":"MC","498":"MD","450":"MG","462":"MV","484":"MX","584":"MH","807":"MK","466":"ML","470":"MT","104":"MM","499":"ME","496":"MN","580":"MP","508":"MZ","478":"MR","500":"MS","474":"MQ","480":"MU","454":"MW","458":"MY","175":"YT","516":"NA","540":"NC","562":"NE","574":"NF","566":"NG","558":"NI","570":"NU","528":"NL","578":"NO","524":"NP","520":"NR","554":"NZ","512":"OM","586":"PK","591":"PA","612":"PN","604":"PE","608":"PH","585":"PW","598":"PG","616":"PL","630":"PR","408":"KP","620":"PT","600":"PY","275":"PS","258":"PF","634":"QA","638":"RE","642":"RO","643":"RU","646":"RW","682":"SA","729":"SD","686":"SN","702":"SG","239":"GS","654":"SH","744":"SJ","090":"SB","694":"SL","222":"SV","674":"SM","706":"SO","666":"PM","688":"RS","728":"SS","678":"ST","740":"SR","703":"SK","705":"SI","752":"SE","748":"SZ","534":"SX","690":"SC","760":"SY","796":"TC","148":"TD","768":"TG","764":"TH","762":"TJ","772":"TK","795":"TM","626":"TL","776":"TO","780":"TT","788":"TN","792":"TR","798":"TV","158":"TW","834":"TZ","800":"UG","804":"UA","581":"UM","858":"UY","840":"US","860":"UZ","336":"VA","670":"VC","862":"VE","092":"VG","850":"VI","704":"VN","548":"VU","876":"WF","882":"WS","887":"YE","710":"ZA","894":"ZM","716":"ZW"};
+let thNames=null; try{ thNames=new Intl.DisplayNames(["th"],{type:"region"}); }catch(e){}
+const hasLL=o=>o&&typeof o.lat==="number"&&typeof o.lng==="number";
+function parseLL(str){
+  const s=String(str||"").trim(); if(!s) return null;
+  const pats=[/@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/,/[?&](?:q|query|ll|destination|center)=(-?\d{1,2}\.\d+)(?:,|%2C)\s*(-?\d{1,3}\.\d+)/i,/^(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)$/,/!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/];
+  for(const p of pats){ const m=p.exec(s); if(m){ const lat=+m[1],lng=+m[2]; if(Math.abs(lat)<=90&&Math.abs(lng)<=180) return {lat,lng}; } }
+  return null;
+}
+function cleanLL(o){ const lat=Number(o&&o.lat),lng=Number(o&&o.lng); return (o&&o.lat!=null&&o.lng!=null&&isFinite(lat)&&isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180&&!(lat===0&&lng===0))?{lat,lng}:null; }
+let GEO=null, geoP=null;
+function loadGeo(){
+  if(geoP) return geoP;
+  geoP=(async()=>{
+    if(!window.d3||!window.topojson) throw new Error("lib");
+    const r=await fetch("world.json"); if(!r.ok) throw new Error("data");
+    const topo=await r.json();
+    const fc=topojson.feature(topo,topo.objects.countries);
+    fc.features=fc.features.filter(f=>f.id!=="010");
+    fc.features.forEach((f,i)=>{ if(!f.id) f.id="x"+i; });
+    const byId={}; fc.features.forEach(f=>{ byId[f.id]=f; f._main=mainPart(f); f._c=d3.geoCentroid(f._main); });
+    GEO={fc,byId}; return GEO;
+  })();
+  geoP.catch(()=>{ geoP=null; });
+  return geoP;
+}
+function mainPart(f){
+  const g=f.geometry; if(!g||g.type!=="MultiPolygon") return f;
+  let best=null,ba=-1; g.coordinates.forEach(c=>{ const p={type:"Polygon",coordinates:c}; const a=d3.geoArea(p); if(a>ba){ba=a;best=p;} });
+  return {type:"Feature",id:f.id,properties:f.properties,geometry:best};
+}
+function countryName(id){ const f=GEO&&GEO.byId[id]; const a2=NUM2A2[id]; try{ if(a2&&thNames){ const n=thNames.of(a2); if(n&&n!==a2) return n; } }catch(e){} return f?f.properties.name:"ไม่ทราบประเทศ"; }
+const ctryCache=new Map();
+function countryAt(lat,lng){
+  const k=lat.toFixed(3)+","+lng.toFixed(3); if(ctryCache.has(k)) return ctryCache.get(k);
+  const test=(la,ln)=>{ for(const f of GEO.fc.features){ if(d3.geoContains(f,[ln,la])) return f.id; } return null; };
+  let id=test(lat,lng);
+  if(!id){ outer: for(const r of [0.05,0.15,0.35]){ for(let a=0;a<8;a++){ const t=a*Math.PI/4; id=test(lat+r*Math.sin(t),lng+r*Math.cos(t)); if(id) break outer; } } }
+  ctryCache.set(k,id); return id;
+}
+function stayVisited(t,s){ if(typeof s.visited==="boolean") return s.visited; for(let i=s.startDay;i<s.startDay+s.nights&&i<t.days.length;i++){ if(t.days[i].items.some(x=>x.done)) return true; } return false; }
+function tripPins(t,dayFilter){
+  const groups=new Map();
+  const add=(p)=>{ const key=t.id+"|"+p.name.toLowerCase()+"|"+p.lat.toFixed(3); let g=groups.get(key); if(!g){ g={key,lat:p.lat,lng:p.lng,name:p.name,trip:t,refs:[],visited:false,stay:false,day:p.day,date:p.date}; groups.set(key,g); } g.refs.push(p); if(p.visited) g.visited=true; if(p.kind==="stay") g.stay=true; if(p.day<g.day){ g.day=p.day; g.date=p.date; } };
+  t.days.forEach((d,di)=>{ if(dayFilter!=null&&dayFilter!==di) return; d.items.forEach(it=>{ if(hasLL(it)) add({kind:"item",lat:it.lat,lng:it.lng,name:(it.place&&!isUrl(it.place))?it.place:it.title,title:it.title,time:it.time,date:d.date,day:di,ref:it,visited:!!it.done}); }); });
+  (t.stays||[]).forEach(s=>{ if(!hasLL(s)) return; if(dayFilter!=null&&!(dayFilter>=s.startDay&&dayFilter<s.startDay+s.nights)) return; add({kind:"stay",lat:s.lat,lng:s.lng,name:s.name,title:"ที่พัก "+s.nights+" คืน",date:t.start?addDays(t.start,s.startDay):"",day:s.startDay,ref:s,visited:stayVisited(t,s)}); });
+  return [...groups.values()];
+}
+function journalStats(){
+  const visited=new Set(Object.keys(store.journal.countries||{}).filter(k=>store.journal.countries[k])), planned=new Set(), pinsBy={};
+  let places=0, placesDone=0;
+  Object.values(store.trips).forEach(t=>tripPins(t).forEach(p=>{ const c=countryAt(p.lat,p.lng); if(!c) return; (pinsBy[c]=pinsBy[c]||[]).push(p); places++; if(p.visited){ placesDone++; visited.add(c); } else planned.add(c); }));
+  visited.forEach(c=>planned.delete(c));
+  return {visited,planned,pinsBy,places,placesDone};
+}
+function toggleRefs(pin,val){
+  pin.refs.forEach(r=>{ if(r.kind==="item") r.ref.done=val; else r.ref.visited=val; });
+  store.put(pin.trip);
+}
+const CHECK_D="M-3.6,0.2 L-1,2.8 L3.8,-2.4";
+function pinLayer(g,pins,proj,onClick){
+  const sel=g.selectAll("g.pin").data(pins,d=>d.key).join("g").attr("class",d=>"pin"+(d.visited?" v":"")+(d.stay?" s":"")).attr("transform",d=>{ const [x,y]=proj([d.lng,d.lat]); return `translate(${x},${y})`; }).style("cursor","pointer").on("click",(e,d)=>{ e.stopPropagation(); onClick(d); });
+  sel.selectAll("*").remove();
+  sel.append("circle").attr("class","halo").attr("r",d=>d.visited?9:6);
+  sel.append("circle").attr("class","dot").attr("r",d=>d.visited?7:4.5);
+  sel.filter(d=>d.visited).append("path").attr("class","tick").attr("d",CHECK_D);
+  sel.append("title").text(d=>d.name+(d.visited?" ✓ ไปแล้ว":""));
+  return sel;
+}
+function setupZoom(svg,inner,key,onZoom,maxK){
+  const z=d3.zoom().scaleExtent([1,maxK||40]).on("zoom",e=>{ inner.attr("transform",e.transform); ui.zoomT[key]=e.transform; onZoom&&onZoom(e.transform.k); });
+  svg.call(z).on("dblclick.zoom",null);
+  if(ui.zoomT[key]) svg.call(z.transform,ui.zoomT[key]); else onZoom&&onZoom(1);
+  return z;
+}
+function mapError(box,msg){ box.innerHTML=`<div class="maploading">${esc(msg)}</div>`; }
+function pinInfo(pin,host,redraw){
+  if(!host) return;
+  const t=pin.trip;
+  host.innerHTML=`<div class="card pininfo">
+    <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div class="pi-name">${pin.visited?'<span class="okbadge">✓ ไปแล้ว</span> ':""}${esc(pin.name)}</div>
+        <div class="meta">${esc(t.name)}${pin.date?" · "+esc(fmtDate(pin.date)):" · วันที่ "+(pin.day+1)}</div>
+      </div>
+      ${pinBtns(pin.lat.toFixed(6)+","+pin.lng.toFixed(6),"เปิดใน Google Maps")}
+    </div>
+    <div style="margin-top:8px">${pin.refs.map((r,i)=>`<label class="check" style="border:none;padding:4px 0"><input type="checkbox" class="cb" data-ri="${i}" ${r.visited?"checked":""}>${r.kind==="item"?`<span class="aicon" style="width:26px;height:26px;color:${CATS[r.ref.cat]?.color}">${aic(itemIcon(r.ref),'style="width:14px;height:14px"')}</span>`:`<span class="aicon" style="width:26px;height:26px;color:var(--c-stay)">${aic("bed",'style="width:14px;height:14px"')}</span>`}<span>${r.time?esc(r.time)+" · ":""}${esc(r.title)}</span></label>`).join("")}</div>
+  </div>`;
+  $$("input[data-ri]",host).forEach(cb=>cb.onchange=()=>{ const r=pin.refs[+cb.dataset.ri]; if(r.kind==="item") r.ref.done=cb.checked; else r.ref.visited=cb.checked; store.put(t); redraw(); });
+}
+
+/* world / country journal */
+async function drawJournal(){
+  const box=$("#worldmap"); if(!box) return;
+  if(!GEO) box.innerHTML='<div class="maploading"><span class="spin"></span> กำลังโหลดแผนที่…</div>';
+  try{ await loadGeo(); }catch(e){ mapError(box,"โหลดแผนที่ไม่ได้ ลองรีเฟรชหน้าอีกครั้ง"); return; }
+  if(!document.body.contains(box)) return;
+  const st=journalStats();
+  const statsEl=$("#jstats");
+  if(statsEl) statsEl.innerHTML=`
+    <div class="stat"><b>${st.visited.size}</b><span>ประเทศที่ไปแล้ว</span></div>
+    <div class="stat"><b>${st.placesDone}</b><span>สถานที่ที่ไปแล้ว</span></div>
+    <div class="stat"><b>${st.planned.size}</b><span>ประเทศที่วางแผนไว้</span></div>
+    <div class="stat"><b>${st.places-st.placesDone}</b><span>สถานที่ที่ยังไม่ได้ไป</span></div>`;
+  if(ui.country && GEO.byId[ui.country]) drawCountry(box,ui.country,st); else { ui.country=null; drawWorld(box,st); }
+}
+function drawWorld(box,st){
+  $("#jhead").innerHTML=`<h3 class="section-title" style="margin:0">แผนที่โลก</h3><span class="hint" style="margin:0">กดที่ประเทศเพื่อดูหมุดสถานที่ หรือทำเครื่องหมายว่าเคยไปแล้ว</span>`;
+  const W=960,H=500;
+  box.innerHTML="";
+  const svg=d3.select(box).append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("class","map");
+  const proj=d3.geoNaturalEarth1().fitExtent([[6,6],[W-6,H-6]],{type:"Sphere"}); const path=d3.geoPath(proj);
+  const inner=svg.append("g");
+  inner.append("path").datum({type:"Sphere"}).attr("class","sphere").attr("d",path);
+  inner.append("path").datum(d3.geoGraticule10()).attr("class","grat").attr("d",path);
+  inner.selectAll("path.c").data(GEO.fc.features).join("path").attr("class",f=>"c"+(st.visited.has(f.id)?" v":st.planned.has(f.id)?" p":"")).attr("d",path)
+    .on("click",(e,f)=>{ ui.country=f.id; drawJournal(); }).append("title").text(f=>countryName(f.id));
+  const vis=GEO.fc.features.filter(f=>st.visited.has(f.id));
+  const badges=inner.selectAll("g.badge").data(vis).join("g").attr("class","badge").style("cursor","pointer").on("click",(e,f)=>{ ui.country=f.id; drawJournal(); });
+  badges.append("circle").attr("r",8.5); badges.append("path").attr("d",CHECK_D);
+  const place=k=>badges.attr("transform",f=>{ const [x,y]=proj(f._c); return `translate(${x},${y}) scale(${1/Math.sqrt(k)})`; });
+  setupZoom(svg,inner,"world",place,12);
+  renderCountryList(st);
+  $("#jpanel").innerHTML="";
+}
+function renderCountryList(st){
+  const el=$("#jlist"); if(!el) return;
+  const ids=[...st.visited,...st.planned];
+  if(!ids.length){ el.innerHTML=`<div class="card empty">ยังไม่มีสถานที่บนแผนที่ เพิ่มพิกัดให้กิจกรรมในทริป (แท็บ "แผนที่" ของทริป) หรือกดที่ประเทศเพื่อทำเครื่องหมายว่าเคยไปแล้ว</div>`; return; }
+  el.innerHTML=`<div class="clist">${ids.map(id=>{ const pins=st.pinsBy[id]||[]; const done=pins.filter(p=>p.visited).length; const v=st.visited.has(id);
+    return `<button class="cchip ${v?"v":""}" data-country="${esc(id)}"><span class="cmark">${v?"✓":"○"}</span><span><b>${esc(countryName(id))}</b><small>${pins.length?`ไปแล้ว ${done}/${pins.length} แห่ง`:"เคยไปแล้ว"}</small></span></button>`; }).join("")}</div>`;
+  $$("[data-country]",el).forEach(b=>b.onclick=()=>{ ui.country=b.dataset.country; drawJournal(); window.scrollTo({top:0,behavior:"smooth"}); });
+}
+function drawCountry(box,id,st){
+  const f=GEO.byId[id]; const pins=st.pinsBy[id]||[]; const manual=!!(store.journal.countries||{})[id]; const v=st.visited.has(id);
+  $("#jhead").innerHTML=`<button class="btn sm" id="jback">${ic("back")} แผนที่โลก</button><h3 class="section-title" style="margin:0">${v?'<span class="okbadge">✓</span> ':""}${esc(countryName(id))}</h3><span class="spacer"></span>
+    <label class="check" style="border:none;padding:0;gap:6px;font-size:14px"><input type="checkbox" class="cb" id="jmanual" ${manual?"checked":""}><span>เคยไปประเทศนี้แล้ว</span></label>`;
+  $("#jback").onclick=()=>{ ui.country=null; drawJournal(); };
+  $("#jmanual").onchange=e=>{ store.journal.countries=store.journal.countries||{}; if(e.target.checked) store.journal.countries[id]=true; else delete store.journal.countries[id]; store.saveJournal(); drawJournal(); };
+  const W=960,H=620;
+  box.innerHTML="";
+  const svg=d3.select(box).append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("class","map");
+  const target={type:"FeatureCollection",features:[f._main].concat(pins.length?[{type:"Feature",geometry:{type:"MultiPoint",coordinates:pins.map(p=>[p.lng,p.lat])}}]:[])};
+  const proj=d3.geoMercator().fitExtent([[30,30],[W-30,H-30]],target); const path=d3.geoPath(proj);
+  const inner=svg.append("g");
+  inner.append("rect").attr("class","sea").attr("x",-W*20).attr("y",-H*20).attr("width",W*41).attr("height",H*41);
+  inner.selectAll("path.c").data(GEO.fc.features).join("path").attr("class",x=>"c "+(x.id===id?(v?"sel v":"sel"):"dim")).attr("d",path).on("click",(e,x)=>{ if(x.id!==id){ ui.country=x.id; drawJournal(); } }).append("title").text(x=>countryName(x.id));
+  const panel=$("#jpanel");
+  const redraw=()=>drawJournal();
+  const sel=pinLayer(inner,pins,proj,p=>pinInfo(p,panel,redraw));
+  setupZoom(svg,inner,"c-"+id,k=>sel.attr("transform",d=>{ const [x,y]=proj([d.lng,d.lat]); return `translate(${x},${y}) scale(${1/k})`; }),60);
+  // list of places grouped by trip
+  const byTrip=new Map(); pins.forEach(p=>{ if(!byTrip.has(p.trip.id)) byTrip.set(p.trip.id,[]); byTrip.get(p.trip.id).push(p); });
+  $("#jlist").innerHTML=pins.length?[...byTrip.values()].map(list=>{ const t=list[0].trip; list.sort((a,b)=>a.day-b.day);
+    return `<div class="card panel" style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="font-size:19px;flex:1">${esc(t.name)}</h3><span class="meta" style="color:var(--muted);font-size:13px">ไปแล้ว ${list.filter(p=>p.visited).length}/${list.length} แห่ง</span><button class="btn sm" data-open-trip="${esc(t.id)}">เปิดทริป</button></div>
+      <div class="plist">${list.map(p=>`<label class="pl ${p.visited?"v":""}"><input type="checkbox" class="cb" data-pk="${esc(p.key)}" ${p.visited?"checked":""}><span class="pl-n">${esc(p.name)}</span><span class="pl-d">${p.date?esc(fmtDate(p.date,false)):"วันที่ "+(p.day+1)}</span></label>`).join("")}</div></div>`; }).join("")
+    : `<div class="card empty">${manual?"ทำเครื่องหมายว่าเคยไปแล้ว — ":""}ยังไม่มีหมุดสถานที่ในประเทศนี้</div>`;
+  $$("[data-pk]",$("#jlist")).forEach(cb=>cb.onchange=()=>{ const p=pins.find(x=>x.key===cb.dataset.pk); if(p){ toggleRefs(p,cb.checked); redraw(); } });
+  $$("[data-open-trip]",$("#jlist")).forEach(b=>b.onclick=()=>{ ui.tab="map"; go("trip",b.dataset.openTrip); });
+  panel.innerHTML=pins.length?`<p class="hint" style="margin:8px 0 0">กดที่หมุดเพื่อดูรายละเอียด · ✓ สีทอง = ไปแล้ว · จุดเล็ก = ยังไม่ได้ไป</p>`:"";
+}
+
+/* trip map tab */
+function renderTripMap(t){
+  const missing=countMissing(t);
+  return `<div class="card panel" style="padding:14px 16px;margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <select class="txt" id="tm-day" style="width:auto">${[`<option value="">ทุกวัน</option>`].concat(t.days.map((d,i)=>`<option value="${i}" ${ui.mapDay===i?"selected":""}>วันที่ ${i+1}${d.date?" · "+esc(fmtDate(d.date,false)):""}${d.title?" · "+esc(d.title):""}</option>`)).join("")}</select>
+      <span class="spacer"></span>
+      <button class="btn sm" data-act="tm-all">✓ ติ๊กว่าไปแล้ว${ui.mapDay!=null?"ทั้งวัน":"ทั้งทริป"}</button>
+      <button class="btn sm ghost" data-act="tm-none">ล้างเครื่องหมาย</button>
+      ${missing?`<button class="btn sm coral" data-act="tm-geo" id="tm-geo">${ic("spark")} หาพิกัดที่ขาด ${missing} แห่ง</button>`:""}
+    </div>
+    <div class="card mapcard"><div id="tripmap" class="mapbox"></div></div>
+    <div id="tm-info"></div>
+    <p class="hint" style="margin-top:8px">เส้นประคือเส้นทางตามลำดับกิจกรรมในแต่ละวัน · ติ๊ก "ไปแล้ว" ที่กิจกรรมในแผนรายวันหรือที่หมุด แล้วประเทศจะขึ้น ✓ ในแผนที่การเดินทาง</p>`;
+}
+function countMissing(t){ let n=0; t.days.forEach(d=>d.items.forEach(it=>{ if(!hasLL(it)&&it.place&&!isUrl(it.place)) n++; })); (t.stays||[]).forEach(s=>{ if(!hasLL(s)) n++; }); return n; }
+async function drawTripMap(t){
+  const box=$("#tripmap"); if(!box) return;
+  const ds=$("#tm-day"); if(ds) ds.onchange=()=>{ ui.mapDay=ds.value===""?null:+ds.value; render(); };
+  if(!GEO) box.innerHTML='<div class="maploading"><span class="spin"></span> กำลังโหลดแผนที่…</div>';
+  try{ await loadGeo(); }catch(e){ mapError(box,"โหลดแผนที่ไม่ได้ ลองรีเฟรชหน้าอีกครั้ง"); return; }
+  if(!document.body.contains(box)) return;
+  const pins=tripPins(t,ui.mapDay);
+  if(!pins.length){ mapError(box, countMissing(t)?"ยังไม่มีพิกัดสถานที่ — กด \"หาพิกัดที่ขาด\" หรือใส่พิกัดในกิจกรรม":"ยังไม่มีสถานที่ในวันนี้"); return; }
+  const W=960,H=600;
+  box.innerHTML="";
+  const svg=d3.select(box).append("svg").attr("viewBox",`0 0 ${W} ${H}`).attr("class","map");
+  let pts=pins.map(p=>[p.lng,p.lat]);
+  const lats=pts.map(p=>p[1]),lngs=pts.map(p=>p[0]);
+  const span=Math.max(d3.max(lats)-d3.min(lats),d3.max(lngs)-d3.min(lngs));
+  if(span<0.02){ const cx=d3.mean(lngs),cy=d3.mean(lats); pts=pts.concat([[cx-0.02,cy-0.02],[cx+0.02,cy+0.02]]); }
+  const proj=d3.geoMercator().fitExtent([[50,50],[W-50,H-50]],{type:"MultiPoint",coordinates:pts}); const path=d3.geoPath(proj);
+  const inner=svg.append("g");
+  inner.append("rect").attr("class","sea").attr("x",-W*20).attr("y",-H*20).attr("width",W*41).attr("height",H*41);
+  inner.selectAll("path.c").data(GEO.fc.features).join("path").attr("class","c land").attr("d",path).append("title").text(x=>countryName(x.id));
+  // routes per day
+  const routes=[]; t.days.forEach((d,di)=>{ if(ui.mapDay!=null&&ui.mapDay!==di) return; const seq=d.items.filter(hasLL).map(it=>[it.lng,it.lat]); if(seq.length>1) routes.push({di,coords:seq}); });
+  const routeSel=inner.selectAll("path.route").data(routes).join("path").attr("class","route").attr("d",r=>path({type:"LineString",coordinates:r.coords}));
+  const info=$("#tm-info");
+  const sel=pinLayer(inner,pins,proj,p=>pinInfo(p,info,()=>{ render(); }));
+  setupZoom(svg,inner,"t-"+t.id+"-"+(ui.mapDay==null?"a":ui.mapDay),k=>{ sel.attr("transform",d=>{ const [x,y]=proj([d.lng,d.lat]); return `translate(${x},${y}) scale(${1/k})`; }); routeSel.style("stroke-width",1.6/k+"px").style("stroke-dasharray",`${4/k} ${4/k}`); },80);
+}
+async function aiGeocode(t,btn){
+  const list=[]; t.days.forEach(d=>d.items.forEach(it=>{ if(!hasLL(it)&&it.place&&!isUrl(it.place)) list.push({id:it.id,q:it.place}); })); (t.stays||[]).forEach(s=>{ if(!hasLL(s)) list.push({id:s.id,q:[s.name,s.address].filter(Boolean).join(", ")}); });
+  if(!list.length) return;
+  const sample=await getSampler(); if(!sample){ toast("AI ไม่พร้อมใช้ในหน้านี้ ใส่พิกัดเองในหน้าแก้ไขกิจกรรมได้"); return; }
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="spin"></span> กำลังหาพิกัด…'; }
+  try{
+    const prompt=`ให้พิกัดละติจูด/ลองจิจูด (ทศนิยม 4 ตำแหน่ง) ของสถานที่ต่อไปนี้ ซึ่งอยู่ในทริปไป "${t.destination||t.name}". ตอบเป็น JSON array เท่านั้น รูปแบบ [{"id":"...","lat":0,"lng":0}] ถ้าไม่แน่ใจตำแหน่งของที่ไหน ให้ข้ามรายการนั้น\n\n`+JSON.stringify(list);
+    let v; if(typeof sample.json==="function") v=await sample.json(prompt,{modelTier:"default",cache:false}); else { const r=await sample(prompt,{modelTier:"default",cache:false}); const m=/\[[\s\S]*\]/.exec(r.text||""); v=JSON.parse(m?m[0]:"[]"); }
+    if(!Array.isArray(v)&&v&&Array.isArray(v.results)) v=v.results;
+    let n=0; (Array.isArray(v)?v:[]).forEach(r=>{ const ll=cleanLL(r); if(!ll) return; const it=t.days.flatMap(d=>d.items).find(x=>x.id===r.id)||(t.stays||[]).find(x=>x.id===r.id); if(it&&!hasLL(it)){ it.lat=ll.lat; it.lng=ll.lng; n++; } });
+    store.put(t); toast(n?`ได้พิกัด ${n} แห่ง (ตำแหน่งโดยประมาณ)`:"หาพิกัดไม่ได้ ลองใส่ชื่อสถานที่ให้ชัดขึ้น"); render();
+  }catch(e){ toast(e&&e.code==="rate_limited"?"ใช้งาน AI ถี่เกินไป รอสักครู่":"หาพิกัดไม่สำเร็จ ลองอีกครั้ง"); if(btn){ btn.disabled=false; btn.innerHTML=`${ic("spark")} หาพิกัดที่ขาด`; } }
+}
+
+/* ---------- state & render ---------- */
+const ui={view:"home",tripId:null,tab:"plan",homeTab:"trips",country:null,zoomT:{},mapDay:null};
+function curTrip(){ return store.trips[ui.tripId]; }
+function go(view,tripId){ ui.view=view; if(tripId!==undefined) ui.tripId=tripId; if(view==="trip") ui.tab=ui.tab||"plan"; try{ location.hash=view==="trip"&&tripId?"trip-"+tripId:""; }catch(e){} render(); window.scrollTo(0,0); }
+let lastFocus=null;
+function render(fromSync){
+  const app=$("#app");
+  // don't clobber an input the user is typing in during a sync refresh
+  if(fromSync && document.activeElement && app.contains(document.activeElement) && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+  if(ui.view==="trip" && !curTrip()) ui.view="home";
+  app.innerHTML = ui.view==="trip" ? renderTrip(curTrip()) : renderHome();
+  getSampler().then(sm=>{ if(sm) $$("[data-ai-only]").forEach(el=>el.hidden=false); });
+  if(ui.view==="home"&&ui.homeTab==="map") drawJournal();
+  if(ui.view==="trip"&&ui.tab==="map") drawTripMap(curTrip());
+}
+function renderHome(){
+  const list=Object.values(store.trips).sort((a,b)=>(a.start||"9999").localeCompare(b.start||"9999")||b.updated-a.updated);
+  const today=toISO(new Date());
+  const nav=`<div class="homenav"><button class="${ui.homeTab==="trips"?"on":""}" data-act="home-tab" data-tab="trips">ทริปของฉัน</button><button class="${ui.homeTab==="map"?"on":""}" data-act="home-tab" data-tab="map">${ic("map",'style="width:15px;height:15px;vertical-align:-2px"')} แผนที่การเดินทาง</button></div>`;
+  if(ui.homeTab==="map") return nav+`<div class="stats" id="jstats" style="margin:0 0 4px"></div><div class="jhead" id="jhead"></div><div class="card mapcard"><div id="worldmap" class="mapbox"></div></div><div id="jpanel"></div><div id="jlist" style="margin-top:14px"></div>`;
+  return nav+`
+  <div class="hero">
+    <div class="card" data-act="new-trip">
+      <div class="badge" style="background:var(--teal-2);color:var(--gold)">${ic("plus",'style="width:22px;height:22px"')}</div>
+      <h2>สร้างทริปใหม่</h2><p>ใส่ชื่อทริป ปลายทาง และวันที่ แล้วเพิ่มกิจกรรมทีละวัน</p>
+    </div>
+    <div class="card" data-act="import">
+      <div class="badge" style="background:var(--coral-2);color:var(--coral)">${ic("import",'style="width:22px;height:22px"')}</div>
+      <h2>นำแผนเที่ยวที่มีอยู่เข้ามา</h2><p>วางข้อความแผนเที่ยว หรือแนบรูปภาพ/ไฟล์ แล้วระบบจะจัดเป็นตารางรายวันให้</p>
+    </div>
+  </div>
+  <h3 class="section-title">${ic("cal")} ทริปของฉัน <span style="color:var(--muted);font-weight:400;font-size:14px">(${list.length})</span></h3>
+  ${list.length? `<div class="trips">${list.map(t=>{
+      const tot=tripTotals(t); const past=t.end&&t.end<today; const now=t.start&&t.start<=today&&(t.end||t.start)>=today;
+      return `<div class="card trip-card" data-act="open" data-id="${esc(t.id)}">
+        <div class="stripe" style="background:${now?"var(--coral)":past?"var(--muted)":"var(--teal)"}"></div>
+        <h3>${esc(t.name)}</h3>
+        <div class="meta">${esc(t.destination||"ยังไม่ระบุปลายทาง")}</div>
+        <div class="meta">${t.start?esc(fmtDate(t.start,false))+(t.end&&t.end!==t.start?" – "+esc(fmtDate(t.end,false)):""):"ยังไม่กำหนดวัน"}${now?' · <b style="color:var(--coral)">กำลังเที่ยว</b>':""}</div>
+        <div class="count"><span>${t.days.length} วัน</span><span>${tot.items} กิจกรรม</span>${tot.total?`<span>${esc(money(tot.total,t.currency))}</span>`:""}</div>
+      </div>`;}).join("")}</div>`
+    : `<div class="card empty">ยังไม่มีทริป เริ่มจากสร้างทริปใหม่ หรือนำแผนเที่ยวที่มีอยู่เข้ามาก็ได้</div>`}
+  `;
+}
+function renderTrip(t){
+  const tot=tripTotals(t);
+  const nDays=t.days.length;
+  return `
+  <button class="btn ghost back" data-act="home">${ic("back")} ทริปทั้งหมด</button>
+  <div class="card trip-head">
+    <div class="row">
+      <div style="flex:1;min-width:200px">
+        <h2>${esc(t.name)}</h2>
+        <div class="meta">
+          ${t.destination?`<span>${ic("map")} ${esc(t.destination)}</span>`:""}
+          <span>${ic("cal")} ${t.start?esc(fmtDate(t.start))+(t.end&&t.end!==t.start?" – "+esc(fmtDate(t.end)):""):"ยังไม่กำหนดวัน"}</span>
+          <span>${t.travelers} คน</span>
+        </div>
+      </div>
+      <button class="btn sm" data-act="edit-trip">${ic("edit")} แก้ข้อมูลทริป</button>
+      <button class="btn sm" data-act="import">${ic("import")} นำเข้าเพิ่ม</button>
+      <button class="btn sm" data-act="copy-text">${ic("copy")} คัดลอกแผน</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>${nDays}</b><span>วัน</span></div>
+      <div class="stat"><b>${tot.items}</b><span>กิจกรรม</span></div>
+      <div class="stat"><b>${(t.stays||[]).length}</b><span>ที่พัก</span></div>
+      <div class="stat"><b>${esc(money(tot.total,""))}</b><span>ค่าใช้จ่าย (${esc(t.currency)})</span></div>
+      <div class="stat"><b>${esc(money(tot.total/(t.travelers||1),""))}</b><span>ต่อคน</span></div>
+      ${t.checklist.length?`<div class="stat"><b>${t.checklist.filter(c=>c.done).length}/${t.checklist.length}</b><span>เตรียมของแล้ว</span></div>`:""}
+    </div>
+  </div>
+  <div class="tabs">
+    ${[["plan","แผนรายวัน"],["map","แผนที่"],["stays","ที่พัก"],["budget","งบประมาณ"],["check","เช็กลิสต์"],["notes","บันทึก"]].map(([k,l])=>`<button class="tab ${ui.tab===k?"on":""}" data-act="tab" data-tab="${k}">${l}</button>`).join("")}
+  </div>
+  ${ui.tab==="plan"?renderPlan(t):ui.tab==="map"?renderTripMap(t):ui.tab==="stays"?renderStays(t):ui.tab==="budget"?renderBudget(t):ui.tab==="check"?renderCheck(t):renderNotes(t)}
+  `;
+}
+function renderPlan(t){
+  if(!t.days.length) return `<div class="card empty">ยังไม่มีวันในทริปนี้<br><br><button class="btn primary" data-act="add-day">${ic("plus")} เพิ่มวัน</button> <button class="btn" data-act="edit-trip">กำหนดวันเดินทาง</button></div>`;
+  const strip=(t.stays||[]).length?`<div class="stays-strip">${t.stays.map(s=>`<div class="card stay-chip" data-act="tab" data-tab="stays"><div class="d">${ic("bed",'style="width:13px;height:13px;vertical-align:-2px"')} ${esc(stayRange(t,s))} · ${s.nights} คืน</div><div class="n">${esc(s.name)}</div></div>`).join("")}</div>`:"";
+  const missing=itemsMissingNotes(t).length;
+  const notesBar=missing?`<div class="card notesbar" data-ai-only hidden><span>${ic("spark")} มี ${missing} กิจกรรมที่ยังไม่มีหมายเหตุ</span><span class="spacer"></span><button class="btn sm coral" data-act="ai-notes">${ic("spark")} ให้ AI เขียนหมายเหตุ</button></div>`:"";
+  return notesBar+strip+t.days.map((d,di)=>{
+    const st=stayForDay(t,di); const last=di===t.days.length-1;
+    const stayRow=st?`<div class="stay-row">${ic("bed")} <span>คืนนี้นอน <b>${esc(st.name)}</b>${st.startDay===di?' <span class="chip">เช็กอิน</span>':""}</span><span class="spacer"></span>${pinBtns(stayQuery(st),"ปักหมุดที่พัก")}</div>`
+      : last&&t.days.length>1&&stayForDay(t,di-1)?`<div class="stay-row none">${ic("bed")} วันเดินทางกลับ — ไม่ต้องพัก</div>`
+      : `<div class="stay-row none">${ic("bed")} ยังไม่ได้ระบุที่พักคืนนี้ <span class="spacer"></span><button class="btn sm" data-act="add-stay" data-day="${di}">${ic("plus")} เพิ่มที่พัก</button></div>`;
+    const sum=d.items.reduce((s,i)=>s+(Number(i.cost)||0),0);
+    const places=d.items.map(i=>i.place||"").filter(p=>p&&!isUrl(p));
+    return `<div class="card day" data-day="${esc(d.id)}">
+      <div class="day-head">
+        <span class="day-num">วันที่ ${di+1}</span>
+        ${d.date?`<span class="day-date">${esc(fmtDate(d.date))}</span>`:""}
+        <input class="day-title" data-f="day-title" data-day="${esc(d.id)}" value="${esc(d.title)}" placeholder="ตั้งชื่อวันนี้ เช่น เที่ยวเมืองเก่า">
+        ${sum?`<span class="day-sum">${esc(money(sum,t.currency))}</span>`:""}
+        ${places.length>=2?`<a class="iconbtn" title="ดูเส้นทางทั้งวันบนแผนที่" href="${esc(routeLink(places))}" target="_blank" rel="noopener">${ic("route")}</a>`:""}
+        ${!t.start?`<button class="iconbtn" title="ลบวันนี้" data-act="del-day" data-day="${esc(d.id)}">${ic("trash")}</button>`:""}
+      </div>
+      ${stayRow}
+      <div class="items">
+        ${d.items.length?d.items.map((it,ii)=>`
+          <div class="item ${it.done?"done":""}">
+            <div class="time ${it.time?"":"none"}">${esc(it.time||"–")}</div>
+            <div class="aicon" style="color:${CATS[it.cat]?.color||CATS.other.color}" title="${esc(AICONS[itemIcon(it)].l)}">${aic(itemIcon(it))}${it.done?'<span class="ok">✓</span>':""}</div>
+            <div style="padding-top:3px">
+              <div class="title">${esc(it.title)}</div>
+              <div class="sub">
+                <span class="chip" style="color:${CATS[it.cat]?.color}">${esc(CATS[it.cat]?.label||"อื่นๆ")}</span>
+                ${it.place?`<a href="${esc(mapsLink(it.place))}" target="_blank" rel="noopener">${ic("map",'style="width:13px;height:13px;vertical-align:-2px"')} ${esc(isUrl(it.place)?"เปิดแผนที่":it.place)}</a> <a href="${esc(navLink(it.place))}" target="_blank" rel="noopener" title="นำทางไปที่นี่">${ic("nav",'style="width:13px;height:13px;vertical-align:-2px"')} นำทาง</a>`:""}
+                ${it.cost?`<span>${esc(money(it.cost,t.currency))}</span>`:""}
+              </div>
+              ${it.note?`<div class="note">${esc(it.note)}</div>`:""}
+            </div>
+            <div class="acts">
+              <input type="checkbox" class="cb" title="ไปแล้ว" data-act="toggle-item" data-day="${esc(d.id)}" data-item="${esc(it.id)}" ${it.done?"checked":""}>
+              <button class="iconbtn" title="เลื่อนขึ้น" data-act="item-up" data-day="${esc(d.id)}" data-item="${esc(it.id)}" ${ii===0?"disabled":""}>${ic("up")}</button>
+              <button class="iconbtn" title="เลื่อนลง" data-act="item-down" data-day="${esc(d.id)}" data-item="${esc(it.id)}" ${ii===d.items.length-1?"disabled":""}>${ic("down")}</button>
+              <button class="iconbtn" title="แก้ไข" data-act="edit-item" data-day="${esc(d.id)}" data-item="${esc(it.id)}">${ic("edit")}</button>
+              <button class="iconbtn" title="ลบ" data-act="del-item" data-day="${esc(d.id)}" data-item="${esc(it.id)}">${ic("trash")}</button>
+            </div>
+          </div>`).join(""):`<div style="padding:10px 16px;color:var(--muted);font-size:14px">ยังไม่มีกิจกรรม</div>`}
+      </div>
+      <div class="day-foot">
+        <button class="btn sm" data-act="add-item" data-day="${esc(d.id)}">${ic("plus")} เพิ่มกิจกรรม</button>
+        ${d.items.length?`<button class="btn sm ghost" data-act="day-done" data-day="${esc(d.id)}">✓ ไปครบทั้งวัน</button>`:""}
+        ${d.items.length>1?`<button class="btn sm ghost" data-act="sort-day" data-day="${esc(d.id)}">${ic("sort")} เรียงตามเวลา</button>`:""}
+      </div>
+    </div>`;}).join("")+(t.start?"":`<button class="btn" data-act="add-day">${ic("plus")} เพิ่มวัน</button>`)+
+    (t.start?`<p style="color:var(--muted);font-size:13px">จำนวนวันตั้งตามวันเดินทาง เปลี่ยนได้ที่ "แก้ข้อมูลทริป"</p>`:"");
+}
+function renderStays(t){
+  const n=t.days.length; const nightsNeeded=Math.max(0,n-1);
+  const gaps=[]; for(let i=0;i<nightsNeeded;i++) if(!stayForDay(t,i)) gaps.push(i);
+  return `${gaps.length&&n>1?`<div class="gap-warn">ยังไม่มีที่พักสำหรับ ${gaps.map(i=>t.start?"คืน "+fmtDate(addDays(t.start,i),false):"คืนวันที่ "+(i+1)).join(", ")}</div>`:""}
+  ${(t.stays||[]).map(s=>`<div class="card stay-card">
+      <div class="night"><b>${s.nights}</b><span>คืน</span></div>
+      <div>
+        <h3>${esc(s.name)}</h3>
+        <div class="meta">${ic("cal",'style="width:13px;height:13px;vertical-align:-2px"')} ${esc(stayRange(t,s))}${t.start?" (เช็กอิน "+esc(fmtDate(addDays(t.start,s.startDay)))+")":""}</div>
+        ${s.address?`<div class="meta">${esc(s.address)}</div>`:""}
+        ${s.cost||s.booking?`<div class="meta">${s.cost?esc(money(s.cost,t.currency)):""}${s.cost&&s.booking?" · ":""}${s.booking?"เลขที่จอง "+esc(s.booking):""}</div>`:""}
+        ${s.note?`<div class="meta" style="white-space:pre-wrap">${esc(s.note)}</div>`:""}
+        <div class="links">${pinBtns(hasLL(s)&&!s.map?s.lat+","+s.lng:stayQuery(s),"ปักหมุดบนแผนที่")}<label class="check" style="border:none;padding:0 6px;gap:6px;font-size:13px"><input type="checkbox" class="cb" data-act="toggle-stay" data-id="${esc(s.id)}" ${stayVisited(t,s)?"checked":""}><span>พักแล้ว</span></label></div>
+      </div>
+      <div class="acts" style="display:flex;gap:2px">
+        <button class="iconbtn" title="แก้ไข" data-act="edit-stay" data-id="${esc(s.id)}">${ic("edit")}</button>
+        <button class="iconbtn" title="ลบ" data-act="del-stay" data-id="${esc(s.id)}">${ic("trash")}</button>
+      </div>
+    </div>`).join("")||`<div class="card empty">ยังไม่มีที่พัก</div>`}
+  <button class="btn primary" data-act="add-stay" data-day="${gaps.length?gaps[0]:0}">${ic("plus")} เพิ่มที่พัก</button>`;
+}
+function stayForm(t,stayId,dayIdx){
+  const s=stayId?(t.stays||[]).find(x=>x.id===stayId):{name:"",address:"",map:"",startDay:dayIdx||0,nights:1,cost:"",booking:"",note:""};
+  if(!s) return;
+  const n=Math.max(1,t.days.length);
+  const dayOpt=i=>`วันที่ ${i+1}${t.start?" · "+fmtDate(addDays(t.start,i)):""}`;
+  const m=openModal(`
+    <h3>${stayId?"แก้ไขที่พัก":"เพิ่มที่พัก"}</h3>
+    <form>
+      <label class="f">ชื่อที่พัก</label><input class="txt" name="name" value="${esc(s.name)}" placeholder="เช่น Hotel Gracery Shinjuku" required>
+      <label class="f">ที่อยู่ หรือชื่อสำหรับค้นหาบนแผนที่</label><input class="txt" name="address" value="${esc(s.address)}" placeholder="เช่น 1-19-1 Kabukicho, Shinjuku, Tokyo">
+      <div class="frow" style="grid-template-columns:1fr 200px">
+        <div><label class="f">ลิงก์ Google Maps (ไม่บังคับ — จะเปิดหมุดนี้ตรงๆ)</label><input class="txt" name="map" value="${esc(s.map)}" placeholder="https://maps.app.goo.gl/..."></div>
+        <div><label class="f">พิกัด (ไม่บังคับ)</label><input class="txt" name="ll" value="${hasLL(s)?s.lat+", "+s.lng:""}" placeholder="35.7135, 139.7929"></div>
+      </div>
+      <div class="frow">
+        <div><label class="f">เช็กอินวัน</label><select class="txt" name="startDay">${Array.from({length:n},(_,i)=>`<option value="${i}" ${i===s.startDay?"selected":""}>${esc(dayOpt(i))}</option>`).join("")}</select></div>
+        <div><label class="f">จำนวนคืน</label><input class="txt" type="number" min="1" max="60" name="nights" value="${s.nights}"></div>
+      </div>
+      <div class="frow">
+        <div><label class="f">ค่าที่พักรวม (${esc(t.currency)})</label><input class="txt" type="number" min="0" step="any" name="cost" value="${s.cost||""}" placeholder="0"></div>
+        <div><label class="f">เลขที่การจอง</label><input class="txt" name="booking" value="${esc(s.booking)}"></div>
+      </div>
+      <label class="f">หมายเหตุ</label><textarea class="txt" rows="2" name="note" placeholder="เช่น เช็กอิน 15:00, มีอาหารเช้า">${esc(s.note)}</textarea>
+      <div class="err" data-err></div>
+      <div class="foot"><button type="button" class="btn" data-x="no">ยกเลิก</button><button class="btn primary">${stayId?"บันทึก":"เพิ่ม"}</button></div>
+    </form>`);
+  $('[data-x="no"]',m).onclick=closeModal;
+  $("form",m).onsubmit=e=>{
+    e.preventDefault(); const f=new FormData(e.target);
+    const data={name:String(f.get("name")||"").trim(),address:String(f.get("address")||"").trim(),map:isUrl(f.get("map"))?String(f.get("map")).trim():"",
+      startDay:parseInt(f.get("startDay"))||0,nights:Math.max(1,parseInt(f.get("nights"))||1),cost:Number(f.get("cost"))||0,booking:String(f.get("booking")||"").trim(),note:String(f.get("note")||"").trim()};
+    if(!data.name) return;
+    const ll=parseLL(f.get("ll"))||parseLL(data.map);
+    if(ll){ data.lat=ll.lat; data.lng=ll.lng; } else if(String(f.get("ll")||"").trim()){ $("[data-err]",m).textContent="รูปแบบพิกัดไม่ถูกต้อง ใช้แบบ 35.7148, 139.7967"; return; }
+    else if(stayId && (s.name!==data.name||s.address!==data.address)){ delete s.lat; delete s.lng; }
+    if(f.get("map") && !data.map){ $("[data-err]",m).textContent="ลิงก์แผนที่ต้องขึ้นต้นด้วย https://"; return; }
+    const clash=(t.stays||[]).find(x=>x.id!==stayId && data.startDay<x.startDay+x.nights && x.startDay<data.startDay+data.nights);
+    if(clash){ $("[data-err]",m).textContent=`ช่วงคืนนี้ซ้อนกับ "${clash.name}" — ปรับวันหรือจำนวนคืนก่อน`; return; }
+    t.stays=t.stays||[];
+    if(stayId) Object.assign(s,data); else t.stays.push(Object.assign({id:uid()},data));
+    t.stays.sort((a,b)=>a.startDay-b.startDay);
+    store.put(t); closeModal(); render();
+  };
+}
+function renderBudget(t){
+  const tot=tripTotals(t); const max=Math.max(1,...Object.values(tot.byCat));
+  const dayMax=Math.max(1,...t.days.map(d=>d.items.reduce((s,i)=>s+(Number(i.cost)||0),0)));
+  const pct=t.budget?Math.min(100,tot.total/t.budget*100):0;
+  return `<div class="grid2">
+    <div class="card panel">
+      <h3 style="font-size:16px">งบที่ตั้งไว้</h3>
+      <div class="addrow"><input class="txt" type="number" min="0" step="any" data-f="budget" value="${t.budget||""}" placeholder="เช่น 30000"><span style="align-self:center">${esc(t.currency)}</span></div>
+      ${t.budget?`<div class="progress"><i class="${tot.total>t.budget?"over":""}" style="width:${pct}%"></i></div>
+      <div style="font-size:14px">${tot.total>t.budget?`<b style="color:var(--coral)">เกินงบ ${esc(money(tot.total-t.budget,t.currency))}</b>`:`ใช้ไป ${pct.toFixed(0)}% · เหลือ <b>${esc(money(t.budget-tot.total,t.currency))}</b>`}</div>`:`<p style="color:var(--muted);font-size:14px">ใส่งบรวมของทริปเพื่อดูว่าใช้ไปเท่าไรแล้ว</p>`}
+      <div style="margin-top:14px;font-size:14px">รวมทั้งทริป <b>${esc(money(tot.total,t.currency))}</b> · เฉลี่ยต่อคน <b>${esc(money(tot.total/(t.travelers||1),t.currency))}</b></div>
+    </div>
+    <div class="card panel">
+      <h3 style="font-size:16px">แยกตามประเภท</h3>
+      ${Object.keys(CATS).filter(k=>tot.byCat[k]).map(k=>`<div class="bar-row"><span>${CATS[k].label}</span><div class="bar"><i style="width:${tot.byCat[k]/max*100}%;background:${CATS[k].color}"></i></div><span class="num">${esc(money(tot.byCat[k],""))}</span></div>`).join("")||`<p style="color:var(--muted);font-size:14px">ยังไม่มีค่าใช้จ่าย ใส่ราคาในแต่ละกิจกรรมได้</p>`}
+    </div>
+    <div class="card panel" style="grid-column:1/-1">
+      <h3 style="font-size:16px">แยกตามวัน</h3>
+      ${t.days.map((d,i)=>{const s=d.items.reduce((a,x)=>a+(Number(x.cost)||0),0);return `<div class="bar-row"><span>วันที่ ${i+1}${d.date?" · "+esc(fmtDate(d.date,false)):""}</span><div class="bar"><i style="width:${s/dayMax*100}%;background:var(--teal)"></i></div><span class="num">${esc(money(s,""))}</span></div>`;}).join("")||`<p style="color:var(--muted)">ยังไม่มีวัน</p>`}
+    </div>
+  </div>`;
+}
+const CHECK_SUGGEST=["พาสปอร์ต","วีซ่า","ตั๋วเครื่องบิน","จองที่พัก","ประกันเดินทาง","ซิม/eSIM","แลกเงิน","ปลั๊กแปลง","พาวเวอร์แบงก์","ยาประจำตัว"];
+function renderCheck(t){
+  const sugg=CHECK_SUGGEST.filter(s=>!t.checklist.some(c=>c.text===s));
+  return `<div class="card panel">
+    ${t.checklist.map(c=>`<div class="check ${c.done?"done":""}"><input type="checkbox" class="cb" data-act="toggle-check" data-id="${esc(c.id)}" ${c.done?"checked":""}><span>${esc(c.text)}</span><button class="iconbtn" data-act="del-check" data-id="${esc(c.id)}">${ic("trash")}</button></div>`).join("")||`<p style="color:var(--muted);margin-top:0">ยังไม่มีรายการ</p>`}
+    <form class="addrow" data-form="check"><input class="txt" name="text" placeholder="เพิ่มของที่ต้องเตรียม หรือสิ่งที่ต้องจอง" autocomplete="off"><button class="btn primary">${ic("plus")} เพิ่ม</button></form>
+    ${sugg.length?`<div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="font-size:13px;color:var(--muted)">เพิ่มด่วน:</span>${sugg.map(s=>`<button class="btn sm" data-act="quick-check" data-text="${esc(s)}">+ ${esc(s)}</button>`).join("")}</div>`:""}
+  </div>`;
+}
+function renderNotes(t){
+  return `<div class="card panel"><label class="f" style="margin-top:0">บันทึกของทริป เช่น เลขที่การจอง ที่อยู่โรงแรม เบอร์ติดต่อ</label><textarea class="txt" rows="12" data-f="notes" placeholder="จดอะไรก็ได้ที่เกี่ยวกับทริปนี้">${esc(t.notes)}</textarea></div>`;
+}
+
+/* ---------- modals ---------- */
+function openModal(html,wide){
+  const root=$("#modal-root");
+  root.innerHTML=`<div class="modal-bg"><div class="card modal ${wide?"wide":""}" role="dialog" aria-modal="true">${html}</div></div>`;
+  const bg=$(".modal-bg",root);
+  bg.addEventListener("mousedown",e=>{ if(e.target===bg) closeModal(); });
+  const first=$("input,textarea,select",root); if(first) setTimeout(()=>first.focus(),30);
+  return $(".modal",root);
+}
+function closeModal(){ $("#modal-root").innerHTML=""; }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && $("#modal-root").innerHTML) closeModal(); });
+function confirmBox(msg,okLabel,fn){
+  const m=openModal(`<h3>${esc(msg)}</h3><div class="foot"><button class="btn" data-x="no">ยกเลิก</button><button class="btn coral" data-x="ok">${esc(okLabel||"ยืนยัน")}</button></div>`);
+  $('[data-x="no"]',m).onclick=closeModal; $('[data-x="ok"]',m).onclick=()=>{ closeModal(); fn(); };
+}
+function toast(msg){ const el=document.createElement("div"); el.className="toast"; el.textContent=msg; document.body.appendChild(el); setTimeout(()=>el.remove(),2600); }
+
+function tripForm(t,isNew){
+  const m=openModal(`
+    <h3>${isNew?"สร้างทริปใหม่":"แก้ข้อมูลทริป"}</h3>
+    <form data-form="trip">
+      <label class="f">ชื่อทริป</label><input class="txt" name="name" value="${esc(isNew?"":t.name)}" placeholder="เช่น โตเกียว–ฟูจิ 5 วัน" required>
+      <label class="f">ปลายทาง</label><input class="txt" name="destination" value="${esc(t.destination)}" placeholder="เช่น ญี่ปุ่น">
+      <div class="frow">
+        <div><label class="f">วันเริ่ม</label><input class="txt" type="date" name="start" value="${esc(t.start)}"></div>
+        <div><label class="f">วันกลับ</label><input class="txt" type="date" name="end" value="${esc(t.end)}"></div>
+      </div>
+      <div class="frow3">
+        <div><label class="f">จำนวนคน</label><input class="txt" type="number" min="1" name="travelers" value="${t.travelers||1}"></div>
+        <div><label class="f">สกุลเงิน</label><select class="txt" name="currency">${[...new Set([t.currency,...CURRENCIES])].map(c=>`<option ${c===t.currency?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+        <div><label class="f">งบรวม</label><input class="txt" type="number" min="0" step="any" name="budget" value="${t.budget||""}" placeholder="ไม่บังคับ"></div>
+      </div>
+      ${isNew?`<p class="hint" style="margin-top:10px">ถ้ายังไม่รู้วันที่ เว้นว่างไว้ก่อน แล้วเพิ่มวันเองได้</p>`:""}
+      <div class="err" data-err></div>
+      <div class="foot">
+        ${!isNew?`<button type="button" class="btn danger" data-x="del" style="margin-right:auto">${ic("trash")} ลบทริป</button>`:""}
+        <button type="button" class="btn" data-x="no">ยกเลิก</button>
+        <button class="btn primary">${isNew?"สร้างทริป":"บันทึก"}</button>
+      </div>
+    </form>`);
+  $('[data-x="no"]',m).onclick=closeModal;
+  const del=$('[data-x="del"]',m);
+  if(del) del.onclick=()=>confirmBox(`ลบทริป "${t.name}" ใช่ไหม? ลบแล้วกู้คืนไม่ได้`,"ลบทริป",()=>{ store.remove(t.id); go("home",null); toast("ลบทริปแล้ว"); });
+  $("form",m).onsubmit=e=>{
+    e.preventDefault(); const f=new FormData(e.target);
+    const start=f.get("start")||"", end=f.get("end")||"";
+    if(start&&end&&end<start){ $("[data-err]",m).textContent="วันกลับต้องไม่ก่อนวันเริ่ม"; return; }
+    if(start&&end&&daysBetween(start,end)>60){ $("[data-err]",m).textContent="ทริปยาวได้ไม่เกิน 60 วัน"; return; }
+    const trip=isNew?newTrip():t;
+    trip.name=String(f.get("name")||"").trim()||"ทริปใหม่"; trip.destination=String(f.get("destination")||"").trim();
+    trip.travelers=Math.max(1,parseInt(f.get("travelers"))||1); trip.currency=f.get("currency")||"THB"; trip.budget=Number(f.get("budget"))||0;
+    if(start && trip.days.length && !trip.start && end){ // had manual days, now dated
+      const n=daysBetween(start,end)+1; if(trip.days.length>n){ trip.end=addDays(start,trip.days.length-1); }
+    }
+    trip.start=start; trip.end=start?(end||start):"";
+    if(trip.start){ const nNeed=daysBetween(trip.start,trip.end)+1; if(trip.days.length>nNeed && trip.days.slice(nNeed).some(d=>d.items.length)){ trip.end=addDays(trip.start,trip.days.length-1); toast("ขยายวันกลับให้ เพราะวันท้ายๆ ยังมีกิจกรรมอยู่"); } syncDaysToRange(trip); }
+    else if(isNew && !trip.days.length){ trip.days.push({id:uid(),title:"",date:"",items:[]}); }
+    if(!trip.start) trip.days.forEach(d=>d.date="");
+    store.put(trip); closeModal(); go("trip",trip.id);
+  };
+}
+
+function itemForm(t,dayId,itemId){
+  const day=t.days.find(d=>d.id===dayId); if(!day) return;
+  const it=itemId?day.items.find(i=>i.id===itemId):{time:"",title:"",place:"",cat:"sight",cost:"",note:""};
+  if(!it) return;
+  const m=openModal(`
+    <h3>${itemId?"แก้ไขกิจกรรม":"เพิ่มกิจกรรม"}</h3>
+    <form data-form="item">
+      <div class="frow" style="grid-template-columns:120px 1fr">
+        <div><label class="f">เวลา</label><input class="txt" type="time" name="time" value="${esc(it.time)}"></div>
+        <div><label class="f">ทำอะไร</label><input class="txt" name="title" value="${esc(it.title)}" placeholder="เช่น ไหว้พระวัดเซ็นโซจิ" required></div>
+      </div>
+      <div class="frow" style="grid-template-columns:1fr 200px">
+        <div><label class="f">สถานที่ (ชื่อ หรือวางลิงก์ Google Maps)</label><input class="txt" name="place" value="${esc(it.place)}" placeholder="เช่น Senso-ji Asakusa"></div>
+        <div><label class="f">พิกัด (ไม่บังคับ)</label><input class="txt" name="ll" value="${hasLL(it)?it.lat+", "+it.lng:""}" placeholder="35.7148, 139.7967"></div>
+      </div>
+      <div class="frow">
+        <div><label class="f">ประเภท</label><select class="txt" name="cat">${Object.entries(CATS).map(([k,v])=>`<option value="${k}" ${k===it.cat?"selected":""}>${v.label}</option>`).join("")}</select></div>
+        <div><label class="f">ค่าใช้จ่าย (${esc(t.currency)})</label><input class="txt" type="number" min="0" step="any" name="cost" value="${it.cost||""}" placeholder="0"></div>
+      </div>
+      <label class="f">ไอคอน</label>
+      <input type="hidden" name="icon" value="${esc(it.icon||"")}">
+      <div class="iconpick"><button type="button" class="auto ${it.icon?"":"on"}" data-icon="">อัตโนมัติ</button>${Object.entries(AICONS).map(([k,v])=>`<button type="button" data-icon="${k}" title="${esc(v.l)}" class="${it.icon===k?"on":""}">${aic(k)}</button>`).join("")}</div>
+      ${t.days.length>1?`<label class="f">อยู่ในวัน</label><select class="txt" name="day">${t.days.map((d,i)=>`<option value="${esc(d.id)}" ${d.id===dayId?"selected":""}>วันที่ ${i+1}${d.date?" · "+esc(fmtDate(d.date)):""}${d.title?" · "+esc(d.title):""}</option>`).join("")}</select>`:""}
+      <div class="labrow"><label class="f">หมายเหตุ</label><button type="button" class="btn sm ghost" data-suggest hidden>${ic("spark")} ให้ AI แนะนำ</button></div><textarea class="txt" rows="3" name="note" placeholder="เช่น ต้องจองล่วงหน้า, ปิดวันพุธ">${esc(it.note)}</textarea>
+      <div class="foot"><button type="button" class="btn" data-x="no">ยกเลิก</button><button class="btn primary">${itemId?"บันทึก":"เพิ่ม"}</button></div>
+    </form>`);
+  $('[data-x="no"]',m).onclick=closeModal;
+  const titleIn=$('[name="title"]',m), catSel=$('[name="cat"]',m); let catTouched=!!itemId;
+  const iconIn=$('[name="icon"]',m), autoBtn=$('.iconpick .auto',m);
+  const showAuto=()=>{ if(!iconIn.value){ const k=itemIcon({title:titleIn.value,place:$('[name="place"]',m).value,cat:catSel.value}); autoBtn.innerHTML=aic(k,'style="width:15px;height:15px;vertical-align:-3px"')+" อัตโนมัติ"; } };
+  $$(".iconpick button",m).forEach(b=>b.onclick=()=>{ iconIn.value=b.dataset.icon; $$(".iconpick button",m).forEach(x=>x.classList.toggle("on",x===b)); showAuto(); });
+  ["input","change"].forEach(ev=>{ m.addEventListener(ev,e=>{ if(e.target.name==="title"||e.target.name==="place"||e.target.name==="cat") showAuto(); }); });
+  showAuto();
+  const sugBtn=$("[data-suggest]",m);
+  getSampler().then(sm=>{ if(sm&&sugBtn) sugBtn.hidden=false; });
+  if(sugBtn) sugBtn.onclick=async()=>{
+    const title=titleIn.value.trim(); if(!title){ toast("ใส่ชื่อกิจกรรมก่อน"); return; }
+    const d=t.days.find(x=>x.id===dayId)||{}; const tmp={id:"tmp",title,place:$('[name="place"]',m).value,time:$('[name="time"]',m).value,cat:catSel.value,note:""};
+    const n=await aiNotes(t,[{it:tmp,d,di:t.days.indexOf(d)}],sugBtn);
+    if(n){ const ta=$('[name="note"]',m); ta.value=(ta.value.trim()?ta.value.trim()+"\n":"")+tmp.note; } else toast("AI ไม่มีคำแนะนำสำหรับกิจกรรมนี้");
+  };
+  catSel.onchange=()=>catTouched=true;
+  titleIn.oninput=()=>{ if(!catTouched) catSel.value=guessCat(titleIn.value); };
+  $("form",m).onsubmit=e=>{
+    e.preventDefault(); const f=new FormData(e.target);
+    const data={time:normTime(f.get("time")),title:String(f.get("title")||"").trim(),place:String(f.get("place")||"").trim(),cat:f.get("cat"),cost:Number(f.get("cost"))||0,note:String(f.get("note")||"").trim(),icon:AICONS[f.get("icon")]?f.get("icon"):""};
+    if(!data.title) return;
+    const ll=parseLL(f.get("ll"))||parseLL(data.place);
+    if(ll){ data.lat=ll.lat; data.lng=ll.lng; }
+    else if(String(f.get("ll")||"").trim()){ toast("รูปแบบพิกัดไม่ถูกต้อง ใช้แบบ 35.7148, 139.7967"); return; }
+    else if(itemId && it.place!==data.place){ data.lat=undefined; data.lng=undefined; delete it.lat; delete it.lng; }
+    const target=t.days.find(d=>d.id===(f.get("day")||dayId))||day;
+    if(itemId){ Object.assign(it,data); if(target!==day){ day.items=day.items.filter(i=>i!==it); target.items.push(it); } }
+    else target.items.push(Object.assign({id:uid(),done:false},data));
+    // keep timed items in order when adding
+    if(!itemId && data.time) target.items.sort((a,b)=>timeKey(a.time)-timeKey(b.time));
+    store.put(t); closeModal(); render();
+  };
+}
+
+/* import */
+function importModal(intoTrip){
+  let images=[]; let parsed=null; let mode="new";
+  const m=openModal(`
+    <h3>นำแผนเที่ยวเข้ามา</h3>
+    <p class="hint">วางแผนเที่ยวในรูปแบบไหนก็ได้ เช่น ที่จดไว้ในโน้ต แชต LINE หรือที่ได้จากเว็บ/AI อื่น แนบรูปหน้าจอหรือไฟล์ .txt / .json ได้</p>
+    ${intoTrip?`<div class="seg" style="margin:4px 0 8px"><button type="button" data-mode="into" class="on">เพิ่มลงทริปนี้</button><button type="button" data-mode="new">สร้างเป็นทริปใหม่</button></div>`:""}
+    <textarea class="txt" rows="9" data-in="text" placeholder="ตัวอย่าง:
+ทริปเชียงใหม่ 3 วัน
+วันที่ 1 (12 ธ.ค. 69)
+08:00 บินกรุงเทพ–เชียงใหม่ 1,500 บาท
+11:00 ข้าวซอยแม่มณี
+14:00 วัดพระธาตุดอยสุเทพ
+วันที่ 2
+09:00 ม่อนแจ่ม
+..."></textarea>
+    <div class="drop" data-drop>แนบรูปภาพแผนเที่ยว หรือไฟล์ .txt / .json — คลิกหรือลากมาวาง<input type="file" data-in="file" accept="image/*,.txt,.md,.json,.csv,text/plain,application/json" multiple hidden></div>
+    <div class="thumbs" data-thumbs></div>
+    <div class="frow" style="margin-top:4px">
+      <div><label class="f">วันเริ่มทริป (ถ้าแผนไม่ได้ระบุ)</label><input class="txt" type="date" data-in="start" value="${intoTrip?esc(intoTrip.start):""}"></div>
+      <div></div>
+    </div>
+    <div class="err" data-err></div>
+    <div data-preview></div>
+    <div class="foot">
+      <button type="button" class="btn" data-x="no">ยกเลิก</button>
+      <button type="button" class="btn" data-x="basic" title="แยกจากรูปแบบ เช่น วันที่ 1 / 09:00 ...">แปลงแบบพื้นฐาน</button>
+      <button type="button" class="btn coral" data-x="ai" hidden>${ic("spark")} ให้ AI จัดให้</button>
+      <button type="button" class="btn primary" data-x="save" hidden>บันทึก</button>
+    </div>`,true);
+  if(intoTrip) mode="into";
+  $$("[data-mode]",m).forEach(b=>b.onclick=()=>{ mode=b.dataset.mode; $$("[data-mode]",m).forEach(x=>x.classList.toggle("on",x===b)); });
+  getSampler().then(s=>{ if(s && document.body.contains(m)) $('[data-x="ai"]',m).hidden=false; });
+  const fileIn=$('[data-in="file"]',m), drop=$("[data-drop]",m), ta=$('[data-in="text"]',m), err=$("[data-err]",m);
+  drop.onclick=()=>fileIn.click();
+  drop.ondragover=e=>{ e.preventDefault(); drop.classList.add("over"); };
+  drop.ondragleave=()=>drop.classList.remove("over");
+  drop.ondrop=e=>{ e.preventDefault(); drop.classList.remove("over"); handleFiles(e.dataTransfer.files); };
+  fileIn.onchange=()=>{ handleFiles(fileIn.files); fileIn.value=""; };
+  ta.addEventListener("paste",e=>{ const fs=Array.from(e.clipboardData?.files||[]).filter(f=>f.type.startsWith("image/")); if(fs.length){ e.preventDefault(); handleFiles(fs); } });
+  function drawThumbs(){ $("[data-thumbs]",m).innerHTML=images.map((f,i)=>`<div><img src="${URL.createObjectURL(f)}" alt=""><button type="button" data-rm="${i}">×</button></div>`).join(""); $$("[data-rm]",m).forEach(b=>b.onclick=()=>{ images.splice(+b.dataset.rm,1); drawThumbs(); }); }
+  async function handleFiles(list){
+    err.textContent="";
+    for(const f of Array.from(list||[])){
+      if(f.type.startsWith("image/")){ if(f.size>8e6){ err.textContent="รูปใหญ่เกิน 8MB"; continue; } images.push(f); }
+      else { const text=await f.text();
+        if(/\.json$/i.test(f.name)||/^\s*[{[]/.test(text)){ try{ const j=JSON.parse(text); const t0=Array.isArray(j)?j[0]:j; if(t0&&t0.days){ parsed=t0; showPreview(); continue; } }catch(e){} }
+        ta.value=(ta.value?ta.value+"\n":"")+text; }
+    }
+    drawThumbs();
+    if(images.length) getSampler().then(s=>{ if(!s) err.textContent="การอ่านรูปภาพต้องใช้ AI ซึ่งไม่พร้อมใช้ในหน้านี้ ลองวางเป็นข้อความแทน"; });
+  }
+  $('[data-x="no"]',m).onclick=closeModal;
+  $('[data-x="basic"]',m).onclick=()=>{
+    err.textContent="";
+    if(!ta.value.trim()){ err.textContent=images.length?"แปลงแบบพื้นฐานใช้ได้กับข้อความเท่านั้น รูปภาพให้ใช้ \"ให้ AI จัดให้\"":"วางข้อความแผนเที่ยวก่อน"; return; }
+    parsed=basicParse(ta.value); showPreview();
+  };
+  const aiBtn=$('[data-x="ai"]',m);
+  aiBtn.onclick=async()=>{
+    err.textContent="";
+    if(!ta.value.trim() && !images.length){ err.textContent="วางข้อความหรือแนบรูปแผนเที่ยวก่อน"; return; }
+    aiBtn.disabled=true; aiBtn.innerHTML=`<span class="spin"></span> กำลังอ่านแผน…`;
+    try{ parsed=await aiParse(ta.value.trim(),images,$('[data-in="start"]',m).value); showPreview(); }
+    catch(e){
+      if(e&&e.code==="rate_limited") err.textContent="ใช้งาน AI ถี่เกินไป รอสักครู่แล้วลองใหม่";
+      else if(e&&e.code==="not_granted"){ err.textContent="AI ไม่พร้อมใช้ในหน้านี้ ใช้ \"แปลงแบบพื้นฐาน\" แทนได้"; aiBtn.hidden=true; }
+      else err.textContent="AI อ่านแผนไม่สำเร็จ ลองอีกครั้ง หรือใช้ \"แปลงแบบพื้นฐาน\"";
+    }
+    finally{ aiBtn.disabled=false; aiBtn.innerHTML=`${ic("spark")} ให้ AI จัดใหม่`; }
+  };
+  function showPreview(){
+    const p=parsed||{}; const days=Array.isArray(p.days)?p.days:[];
+    const n=days.reduce((s,d)=>s+((d.items||[]).length),0);
+    if(!n){ err.textContent="ยังหากิจกรรมในแผนไม่เจอ ลองจัดให้มี \"วันที่ 1\" และเวลาเช่น \"09:00 …\" นำหน้าแต่ละบรรทัด หรือใช้ AI"; $("[data-preview]",m).innerHTML=""; $('[data-x="save"]',m).hidden=true; return; }
+    $("[data-preview]",m).innerHTML=`<div class="preview">
+      <div style="margin-bottom:8px"><b>${esc(p.name||"แผนเที่ยว")}</b>${p.destination?" · "+esc(p.destination):""}${p.start?" · เริ่ม "+esc(fmtDate(p.start)):""} · ${days.length} วัน ${n} กิจกรรม</div>
+      ${days.map((d,i)=>`<div class="pd">วันที่ ${i+1}${d.title?" · "+esc(d.title):""}</div>${(d.items||[]).map(it=>`<div class="pi">${it.time?esc(normTime(it.time))+" ":""}${esc(it.title)}${it.place?` <em>@ ${esc(it.place)}</em>`:""}${Number(it.cost)?` <em>· ${esc(money(it.cost,p.currency||""))}</em>`:""}</div>`).join("")}`).join("")}
+      ${(p.stays||[]).length?`<div class="pd">ที่พัก</div>${p.stays.map(s=>`<div class="pi">${esc(s.name)} <em>· วันที่ ${(parseInt(s.startDay)||0)+1} · ${parseInt(s.nights)||1} คืน</em></div>`).join("")}`:""}
+      ${(p.checklist||[]).length?`<div class="pd">เช็กลิสต์</div><div class="pi">${(p.checklist||[]).map(c=>esc(typeof c==="string"?c:c.text)).join(", ")}</div>`:""}
+    </div><p class="hint" style="margin-top:8px">ตรวจดูก่อนบันทึก แก้ไขรายละเอียดได้ภายหลัง</p>`;
+    const sv=$('[data-x="save"]',m); sv.hidden=false; sv.textContent=mode==="into"?"เพิ่มลงทริปนี้":"บันทึกเป็นทริปใหม่";
+    $$("[data-mode]",m).forEach(b=>b.addEventListener("click",()=>{ sv.textContent=mode==="into"?"เพิ่มลงทริปนี้":"บันทึกเป็นทริปใหม่"; }));
+  }
+  $('[data-x="save"]',m).onclick=()=>{
+    if(!parsed) return;
+    const startOverride=$('[data-in="start"]',m).value;
+    const p=JSON.parse(JSON.stringify(parsed)); delete p.id;
+    // dates from per-day "date" fields if top-level missing
+    if(!p.start && Array.isArray(p.days)){ const ds=p.days.map(d=>d.date).filter(d=>parseISO(d)); if(ds.length){ p.start=ds[0]; } }
+    if(startOverride && !p.start) p.start=startOverride;
+    if(p.start){ p.end=addDays(p.start,Math.max(0,(p.days||[]).length-1)); }
+    if(mode==="into" && intoTrip){
+      const add=sanitizeTrip(Object.assign({},p,{start:"",end:""}));
+      const t=intoTrip;
+      // merge: day i of import -> day i of trip if trip has days, append extras
+      add.days.forEach((d,i)=>{
+        if(t.days[i]){ t.days[i].items.push(...d.items); if(!t.days[i].title) t.days[i].title=d.title; }
+        else t.days.push({id:uid(),title:d.title,date:"",items:d.items});
+      });
+      if(t.start && t.days.length>daysBetween(t.start,t.end)+1) t.end=addDays(t.start,t.days.length-1);
+      if(t.start) syncDaysToRange(t);
+      t.stays=t.stays||[]; add.stays.forEach(s=>{ if(!t.stays.some(x=>s.startDay<x.startDay+x.nights&&x.startDay<s.startDay+s.nights)) t.stays.push(s); }); t.stays.sort((a,b)=>a.startDay-b.startDay);
+      add.checklist.forEach(c=>{ if(!t.checklist.some(x=>x.text===c.text)) t.checklist.push(c); });
+      if(!t.destination && add.destination) t.destination=add.destination;
+      store.put(t); closeModal(); render(); toast("เพิ่มกิจกรรมลงทริปแล้ว");
+    } else {
+      if(!p.currency) p.currency="THB";
+      const t=sanitizeTrip(p); t.id=uid(); t.created=Date.now();
+      store.put(t); closeModal(); ui.tab="plan"; go("trip",t.id); toast("นำเข้าแผนเที่ยวแล้ว");
+    }
+  };
+}
+
+function tripAsText(t){
+  const L=[]; L.push(t.name+(t.destination?" — "+t.destination:""));
+  if(t.start) L.push(fmtDate(t.start)+(t.end&&t.end!==t.start?" – "+fmtDate(t.end):"")+" · "+t.travelers+" คน");
+  t.days.forEach((d,i)=>{ L.push(""); L.push("วันที่ "+(i+1)+(d.date?" ("+fmtDate(d.date)+")":"")+(d.title?" · "+d.title:""));
+    const st=stayForDay(t,i); if(st) L.push("🛏 นอน: "+st.name+(st.address?" ("+st.address+")":"")+" — "+mapsLink(stayQuery(st)));
+    d.items.forEach(it=>L.push((it.time?it.time+" ":"• ")+it.title+(it.place&&it.place!==it.title?" @ "+it.place:"")+(it.cost?" · "+money(it.cost,t.currency):"")+(it.note?" ("+it.note+")":""))); });
+  const tot=tripTotals(t); if(tot.total){ L.push(""); L.push("รวมค่าใช้จ่าย "+money(tot.total,t.currency)+" (ต่อคน "+money(tot.total/(t.travelers||1),t.currency)+")"); }
+  if(t.checklist.length){ L.push(""); L.push("เช็กลิสต์: "+t.checklist.map(c=>(c.done?"✓ ":"")+c.text).join(", ")); }
+  return L.join("\n");
+}
+function copyText(t){
+  const text=tripAsText(t);
+  const fallback=()=>{ const m=openModal(`<h3>คัดลอกแผนเที่ยว</h3><p class="hint">เลือกข้อความทั้งหมดแล้วคัดลอก</p><textarea class="txt" rows="14" readonly>${esc(text)}</textarea><div class="foot"><button class="btn primary" data-x="no">ปิด</button></div>`); $('[data-x="no"]',m).onclick=closeModal; const ta=$("textarea",m); ta.focus(); ta.select(); };
+  try{ navigator.clipboard.writeText(text).then(()=>toast("คัดลอกแผนแล้ว วางในแชตหรือโน้ตได้เลย"),fallback); }catch(e){ fallback(); }
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-act]"); if(!el || el.closest("#modal-root")&&!el.closest(".modal")) return;
+  const a=el.dataset.act, t=curTrip();
+  const day=t&&el.dataset.day?t.days.find(d=>d.id===el.dataset.day):null;
+  const idx=day&&el.dataset.item?day.items.findIndex(i=>i.id===el.dataset.item):-1;
+  switch(a){
+    case "home": go("home",null); break;
+    case "new-trip": tripForm(newTrip(),true); break;
+    case "import": importModal(ui.view==="trip"?t:null); break;
+    case "open": ui.tab="plan"; ui.mapDay=null; go("trip",el.dataset.id); break;
+    case "edit-trip": tripForm(t,false); break;
+    case "copy-text": copyText(t); break;
+    case "tab": ui.tab=el.dataset.tab; render(); break;
+    case "home-tab": ui.homeTab=el.dataset.tab; render(); break;
+    case "toggle-stay": { const s=(t.stays||[]).find(x=>x.id===el.dataset.id); if(s){ s.visited=el.checked; store.put(t); render(); } break; }
+    case "day-done": if(day){ const all=day.items.every(i=>i.done); day.items.forEach(i=>i.done=!all); store.put(t); render(); } break;
+    case "tm-all": case "tm-none": { const v=a==="tm-all"; t.days.forEach((d,i)=>{ if(ui.mapDay==null||ui.mapDay===i) d.items.forEach(x=>x.done=v); }); (t.stays||[]).forEach(s=>{ if(ui.mapDay==null||(ui.mapDay>=s.startDay&&ui.mapDay<s.startDay+s.nights)) s.visited=v; }); store.put(t); render(); break; }
+    case "tm-geo": aiGeocode(t,el); break;
+    case "ai-notes": aiNotes(t,itemsMissingNotes(t),el).then(n=>{ toast(n?`เขียนหมายเหตุให้ ${n} กิจกรรมแล้ว`:"AI ไม่มีหมายเหตุเพิ่ม"); render(); }); break;
+    case "add-stay": stayForm(t,null,parseInt(el.dataset.day)||0); break;
+    case "edit-stay": stayForm(t,el.dataset.id); break;
+    case "del-stay": { const s=(t.stays||[]).find(x=>x.id===el.dataset.id); if(s) confirmBox(`ลบที่พัก "${s.name}"?`,"ลบ",()=>{ t.stays=t.stays.filter(x=>x!==s); store.put(t); render(); }); break; }
+    case "add-day": t.days.push({id:uid(),title:"",date:"",items:[]}); store.put(t); render(); break;
+    case "del-day": if(day){ const go2=()=>{ t.days=t.days.filter(d=>d!==day); store.put(t); render(); }; day.items.length?confirmBox("ลบวันนี้พร้อมกิจกรรม "+day.items.length+" รายการ?","ลบ",go2):go2(); } break;
+    case "add-item": itemForm(t,el.dataset.day); break;
+    case "edit-item": itemForm(t,el.dataset.day,el.dataset.item); break;
+    case "del-item": if(idx>=0){ const it=day.items[idx]; confirmBox(`ลบ "${it.title}"?`,"ลบ",()=>{ day.items.splice(day.items.indexOf(it),1); store.put(t); render(); }); } break;
+    case "item-up": if(idx>0){ [day.items[idx-1],day.items[idx]]=[day.items[idx],day.items[idx-1]]; store.put(t); render(); } break;
+    case "item-down": if(idx>=0&&idx<day.items.length-1){ [day.items[idx+1],day.items[idx]]=[day.items[idx],day.items[idx+1]]; store.put(t); render(); } break;
+    case "toggle-item": if(idx>=0){ day.items[idx].done=el.checked; store.put(t); render(); } break;
+    case "sort-day": if(day){ day.items.sort((a,b)=>timeKey(a.time)-timeKey(b.time)); store.put(t); render(); } break;
+    case "toggle-check": { const c=t.checklist.find(x=>x.id===el.dataset.id); if(c){ c.done=el.checked; store.put(t); render(); } break; }
+    case "del-check": t.checklist=t.checklist.filter(x=>x.id!==el.dataset.id); store.put(t); render(); break;
+    case "quick-check": t.checklist.push({id:uid(),text:el.dataset.text,done:false}); store.put(t); render(); break;
+  }
+});
+document.addEventListener("submit",e=>{
+  const f=e.target; if(f.dataset.form!=="check") return;
+  e.preventDefault(); const t=curTrip(); const v=String(new FormData(f).get("text")||"").trim(); if(!v) return;
+  t.checklist.push({id:uid(),text:v,done:false}); store.put(t); render(); const inp=$('[data-form="check"] input'); if(inp) inp.focus();
+});
+document.addEventListener("input",e=>{
+  const el=e.target; if(!el.dataset||!el.dataset.f||el.closest("#modal-root")) return;
+  const t=curTrip(); if(!t) return;
+  if(el.dataset.f==="day-title"){ const d=t.days.find(x=>x.id===el.dataset.day); if(d){ d.title=el.value; store.put(t); } }
+  if(el.dataset.f==="notes"){ t.notes=el.value; store.put(t); }
+  if(el.dataset.f==="budget"){ t.budget=Number(el.value)||0; store.put(t); }
+});
+document.addEventListener("change",e=>{ if(e.target.dataset&&e.target.dataset.f==="budget"){ render(); } });
+function fromHash(){ const h=(location.hash||"").replace("#",""); if(h.startsWith("trip-")&&store.trips[h.slice(5)]){ ui.view="trip"; ui.tripId=h.slice(5); } else if(!h){ ui.view="home"; } render(); }
+window.addEventListener("hashchange",fromHash);
+
+store.init().then(()=>fromHash());
+fromHash();
+})();
+</script>
+</body>
+</html>

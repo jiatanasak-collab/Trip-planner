@@ -1,0 +1,33 @@
+{
+  "id": "k3j9x2ab9f1c",
+  "name": "โตเกียว–ฟูจิ 5 วัน",
+  "destination": "ญี่ปุ่น",
+  "start": "2026-12-12",
+  "end": "2026-12-14",
+  "currency": "JPY",
+  "travelers": 2,
+  "budget": 150000,
+  "notes": "เลขจองตั๋ว ABC123",
+  "created": 1763500000000,
+  "updated": 1763510000000,
+  "days": [
+    { "id": "d1", "title": "อาซากุสะ", "date": "2026-12-12", "items": [
+      { "id": "i1", "time": "09:00", "title": "บินไปนาริตะ", "place": "Narita Airport", "cat": "move", "cost": 0, "note": "", "done": true, "lat": 35.772, "lng": 140.3929 },
+      { "id": "i2", "time": "14:00", "title": "ไหว้พระวัดเซ็นโซจิ", "place": "Senso-ji Asakusa", "cat": "sight", "cost": 0, "note": "ไปก่อน 8 โมงคนน้อย", "done": true, "lat": 35.7148, "lng": 139.7967 },
+      { "id": "i3", "time": "19:00", "title": "มื้อเย็น", "place": "https://www.google.com/maps/place/Ichiran/@35.6938,139.7034,17z", "cat": "food", "cost": 3000, "note": "", "done": false, "icon": "bowl" }
+    ]},
+    { "id": "d2", "title": "ฟูจิ", "date": "2026-12-13", "items": [
+      { "id": "i4", "time": "08:30", "title": "รถบัสไปคาวากุจิโกะ", "place": "Busta Shinjuku", "cat": "move", "cost": 4000, "note": "", "done": false },
+      { "id": "i5", "time": "", "title": "แช่ออนเซ็น", "place": "", "cat": "stay", "cost": 2500, "note": "", "done": false }
+    ]},
+    { "id": "d3", "title": "", "date": "2026-12-14", "items": [] }
+  ],
+  "stays": [
+    { "id": "s2", "name": "Fuji Lake Hotel", "address": "Kawaguchiko", "map": "", "startDay": 1, "nights": 1, "cost": 20000, "booking": "", "note": "", "lat": 35.5011, "lng": 138.7672 },
+    { "id": "s1", "name": "Hotel Gracery Shinjuku", "address": "Kabukicho", "map": "https://maps.app.goo.gl/abc", "startDay": 0, "nights": 1, "cost": 18000, "booking": "BK-77", "note": "เช็กอิน 15:00", "visited": true }
+  ],
+  "checklist": [
+    { "id": "c1", "text": "พาสปอร์ต", "done": true },
+    "ปลั๊กแปลง"
+  ]
+}
