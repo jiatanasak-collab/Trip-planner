@@ -8,6 +8,7 @@ import { TripMap } from "../../map/TripMap";
 import { useApp, type TabKey } from "../../state";
 import { TripForm } from "../forms/TripForm";
 import { ImportModal } from "../import/ImportModal";
+import { Assistant } from "./AssistantPanel";
 import { BudgetTab } from "./BudgetTab";
 import { CheckTab } from "./CheckTab";
 import { NotesTab } from "./NotesTab";
@@ -66,6 +67,7 @@ export function TripView({ trip: t }: { trip: Trip }) {
         : ui.tab === "budget" ? <BudgetTab t={t} />
         : ui.tab === "check" ? <CheckTab t={t} />
         : <NotesTab t={t} />}
+      <Assistant t={t} />
     </>
   );
 }

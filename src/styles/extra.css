@@ -26,3 +26,29 @@
   .modal-bg{padding:16px 8px}
   .modal{padding:18px}
 }
+
+/* ผู้ช่วย AI */
+.ai-fab{position:fixed;right:calc(18px + env(safe-area-inset-right, 0px));bottom:calc(18px + env(safe-area-inset-bottom, 0px));z-index:15;padding:11px 18px;box-shadow:0 8px 24px rgba(0,0,0,.45),0 4px 14px rgba(201,164,92,.3)}
+.ai-sheet{position:fixed;z-index:25;right:calc(16px + env(safe-area-inset-right, 0px));bottom:calc(16px + env(safe-area-inset-bottom, 0px));width:min(420px, calc(100vw - 32px));height:min(640px, calc(100vh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));display:flex;flex-direction:column;overflow:hidden;border-color:rgba(201,164,92,.35);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.ai-head{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.2)}
+.ai-head .icon{color:var(--gold)}
+.ai-head b{font-family:"Cormorant Garamond","Noto Serif Thai",serif;font-size:19px;white-space:nowrap}
+.ai-sub{font-size:12px;color:var(--muted)}
+.ai-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.ai-empty{color:var(--muted);font-size:14px}
+.ai-empty p{margin:0 0 10px}
+.ai-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ai-chips .btn{white-space:normal;text-align:left;line-height:1.4}
+.ai-msg{display:flex;flex-direction:column;gap:4px;max-width:88%}
+.ai-msg.user{align-self:flex-end;align-items:flex-end}
+.ai-msg.assistant{align-self:flex-start}
+.ai-bubble{padding:9px 13px;border-radius:14px;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid var(--line);background:var(--field)}
+.ai-msg.user .ai-bubble{background:var(--teal-2);border-color:rgba(201,164,92,.35)}
+.ai-msg.err .ai-bubble{border-color:var(--coral);color:var(--coral)}
+.ai-change{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gold)}
+.ai-input{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);align-items:flex-end}
+.ai-input textarea{resize:none;min-height:44px}
+@media (max-width:480px){
+  .ai-sub{display:none}
+  .ai-sheet{left:0;right:0;bottom:0;width:auto;height:min(82vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px));border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom, 0px);padding-left:env(safe-area-inset-left, 0px);padding-right:env(safe-area-inset-right, 0px)}
+}

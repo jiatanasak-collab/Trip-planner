@@ -28,6 +28,8 @@ interface AppCtx {
   /** แก้ทริปแบบ clone → แก้ → บันทึก (ตั้งเวลา updated ให้) */
   updateTrip: (id: string, fn: (draft: Trip) => void) => void;
   saveTrip: (trip: Trip) => void;
+  /** ทริปเวอร์ชันล่าสุด (รวมการแก้ที่ยังไม่ได้ render) */
+  getTrip: (id: string) => Trip | undefined;
   removeTrip: (id: string) => void;
   updateJournal: (fn: (draft: Journal) => void) => void;
   /** ตำแหน่งซูมของแต่ละแผนที่ จำไว้ระหว่างเปลี่ยนหน้า */
@@ -94,7 +96,8 @@ export function AppProvider({ store, children }: { store: TripStore; children: R
   const saveTrip = useCallback((trip: Trip) => {
     const t = clone(trip);
     t.updated = Date.now();
-    setTrips((m) => ({ ...m, [t.id]: t }));
+    tripsRef.current = { ...tripsRef.current, [t.id]: t };
+    setTrips(tripsRef.current);
     store.putTrip(t).catch(persistFail);
   }, [store, persistFail]);
 
@@ -121,6 +124,8 @@ export function AppProvider({ store, children }: { store: TripStore; children: R
     setJournal(d);
     store.putJournal(d).catch(persistFail);
   }, [store, persistFail]);
+
+  const getTrip = useCallback((id: string) => tripsRef.current[id], []);
 
   const setUi = useCallback((p: Partial<UiState>) => setUiState((u) => ({ ...u, ...p })), []);
 
@@ -157,8 +162,8 @@ export function AppProvider({ store, children }: { store: TripStore; children: R
   }, [modal]);
 
   const value = useMemo<AppCtx>(() => ({
-    store, loaded, trips, journal, ai, ui, setUi, go, updateTrip, saveTrip, removeTrip, updateJournal, zoomT, toast, openModal, closeModal, confirm,
-  }), [store, loaded, trips, journal, ai, ui, setUi, go, updateTrip, saveTrip, removeTrip, updateJournal, toast, openModal, closeModal, confirm]);
+    store, loaded, trips, journal, ai, ui, setUi, go, updateTrip, saveTrip, getTrip, removeTrip, updateJournal, zoomT, toast, openModal, closeModal, confirm,
+  }), [store, loaded, trips, journal, ai, ui, setUi, go, updateTrip, saveTrip, getTrip, removeTrip, updateJournal, toast, openModal, closeModal, confirm]);
 
   return (
     <Ctx.Provider value={value}>

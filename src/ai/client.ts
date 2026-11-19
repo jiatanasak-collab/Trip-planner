@@ -13,11 +13,11 @@ export class AiError extends Error {
 }
 
 /** โมเดลที่ใช้ (เหมือนฝั่งเซิร์ฟเวอร์) */
-const MODEL = "claude-sonnet-5-5";
+export const MODEL = "claude-sonnet-5-5";
 
 let samplerP: Promise<any> | null = null;
 /** ฟังก์ชัน sample ของ artifact หรือ null ถ้าไม่ได้เปิดในหน้า artifact */
-function getSampler(): Promise<any> {
+export function getSampler(): Promise<any> {
   if (!samplerP) {
     const c = (window as any).claude;
     samplerP = c && typeof c.use === "function" ? c.use("sample").catch(() => null) : Promise.resolve(null);
