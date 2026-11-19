@@ -1,0 +1,25 @@
+/* ส่วนที่เพิ่มจากต้นแบบ (ปุ่มนำเข้า/ส่งออก JSON และปรับจอมือถือ) */
+.list-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.ai-off{font-size:12px;color:var(--muted)}
+.json-sum{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:14px}
+.json-sum li{margin:2px 0}
+/* ไม่ต้องเว้นที่ว่างใต้แผนที่เมื่อวาดเสร็จแล้ว (min-height ไว้ใช้ตอนโหลด) */
+.mapbox:has(svg){min-height:0}
+/* ไอคอนในกล่องรายละเอียดหมุดไม่ให้ยืดตาม .check span{flex:1} */
+.check .aicon{flex:none}
+@media (max-width:700px){
+  /* ฟอร์มที่กำหนดคอลัมน์ไว้ใน style ให้เหลือคอลัมน์เดียวบนจอเล็ก ยกเว้นแถวเวลา */
+  .frow[style]:not(.keep){grid-template-columns:1fr !important}
+}
+@media (max-width:480px){
+  header.top{flex-wrap:wrap}
+  header.top .spacer{display:none}
+  header.top .sync{width:100%;padding-left:54px;margin-top:-4px}
+  .top h1{font-size:24px}
+  .trip-head{padding:20px}
+  .trip-head h2{font-size:26px}
+  .stat{min-width:0;flex:1 1 30%}
+  .wrap{padding:16px 14px 80px}
+  .modal-bg{padding:16px 8px}
+  .modal{padding:18px}
+}
