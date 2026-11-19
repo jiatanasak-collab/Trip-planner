@@ -75,6 +75,18 @@ describe("basicParse", () => {
     expect(q.days[0].items[0]).toMatchObject({ title: "Senso-ji", cost: 500 });
     expect(q.currency).toBe("JPY");
   });
+  it("ข้อความแบบ ChatGPT (markdown, ตัวหนา, ช่วงเวลา, ราคาในวงเล็บ)", () => {
+    const q = basicParse("# แผนเที่ยวโตเกียว\n## วันที่ 1 (12 ธ.ค. 2569) – อาซากุสะ\n- **10:30 – 12:00** ไหว้พระวัดเซ็นโซจิ\n- **12:30** กินราเมง (ประมาณ 1,200 เยน)\n- 15:00 สกายทรี ราคา 3,100 เยน\n**ของที่ต้องเตรียม**\n- พาสปอร์ต", TODAY);
+    expect(q.name).toBe("แผนเที่ยวโตเกียว");
+    expect(q.days[0]).toMatchObject({ date: "2026-12-12", title: "อาซากุสะ" });
+    expect(q.days[0].items.map((i) => [i.time, i.title, i.cost])).toEqual([
+      ["10:30", "ไหว้พระวัดเซ็นโซจิ", 0],
+      ["12:30", "กินราเมง", 1200],
+      ["15:00", "สกายทรี", 3100],
+    ]);
+    expect(q.currency).toBe("JPY");
+    expect(q.checklist).toEqual(["พาสปอร์ต"]);
+  });
   it("ข้อความว่าง", () => {
     expect(basicParse("", TODAY).days).toEqual([]);
   });

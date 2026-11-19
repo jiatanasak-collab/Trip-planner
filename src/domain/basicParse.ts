@@ -84,6 +84,8 @@ export function basicParse(text: string, today: Date = new Date()): ParsedPlan {
       cost = Number(num.replace(/,/g, "")) || 0;
       if (!out.currency) out.currency = curMap[sym.toLowerCase()] || "";
       title = title.replace(whole, "").replace(/[\s(,]+\)?$/, "").trim();
+      // เพิ่มจากต้นแบบ: ตัดคำบอกราคาที่ค้างอยู่ เช่น "(ประมาณ 1,200 เยน)" → ไม่เหลือ "(ประมาณ"
+      title = title.replace(/\s*[(（]?\s*(?:ประมาณ|ราวๆ|ราว|ค่าใช้จ่าย|ราคา|approx\.?|~|:)?\s*[)）]?\s*[,:]?\s*$/i, "").trim();
     }
     let note = "";
     const nm = /^(.*?)\s*[(（](.+)[)）]\s*$/.exec(title);
