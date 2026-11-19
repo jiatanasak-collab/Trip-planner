@@ -33,6 +33,10 @@ npm run dev
 คีย์อยู่ฝั่งเซิร์ฟเวอร์เท่านั้น เบราว์เซอร์เรียก AI ผ่าน `/api/ai` ของเราเอง ไม่เห็นคีย์
 โมเดลที่ใช้คือ `claude-sonnet-5-5` (ตั้งไว้ใน `server/app.ts`) รองรับการส่งรูปภาพ และเปิด server-side fallback ไว้ ถ้าโมเดลปฏิเสธคำขอ API จะลองโมเดลสำรองให้อัตโนมัติ
 
+### AI ในหน้า artifact ของ claude.ai
+ถ้าเปิดแอปเป็นหน้า artifact (`npm run build:artifact` แล้ว publish) ปุ่ม AI จะใช้ Claude ผ่านบัญชีของผู้เปิดเอง
+ไม่ต้องมี API key และไม่มีค่าใช้จ่ายเพิ่ม การใช้งานนับรวมในโควตาแพ็กเกจ Claude ของผู้เปิด ครั้งแรกจะมีหน้าต่างขออนุญาต
+
 ## คำสั่ง
 
 | คำสั่ง | ทำอะไร |
@@ -41,6 +45,7 @@ npm run dev
 | `npm test` | รัน unit test |
 | `npm run typecheck` | ตรวจ TypeScript |
 | `npm run build` | build หน้าเว็บไปที่ `dist/` |
+| `npm run build:artifact` | build เป็นหน้า artifact ของ claude.ai (ไฟล์ HTML เดียว + ข้อมูลแผนที่) ไว้ที่ `artifact/` |
 | `npm start` | รันแอปที่ build แล้ว (หน้าเว็บ + API) บน Node ตัวเดียว ที่พอร์ต `PORT` (ค่าเริ่มต้น 3000) |
 
 ## Deploy
