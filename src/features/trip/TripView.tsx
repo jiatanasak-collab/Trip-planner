@@ -48,6 +48,9 @@ export function TripView({ trip: t }: { trip: Trip }) {
           <button className="btn sm" onClick={() => app.openModal(<ImportModal intoTripId={t.id} />, true)}><Ic n="import" /> นำเข้าเพิ่ม</button>
           <button className="btn sm" onClick={copyText}><Ic n="copy" /> คัดลอกแผน</button>
           <button className="btn sm" onClick={exportJson}><Ic n="export" /> ส่งออก JSON</button>
+          {app.store.canShare && (t.shared
+            ? <button className="btn sm shared-on" onClick={() => app.openModal(<ShareModal t={t} />)}><Ic n="share" /> แชร์อยู่</button>
+            : <button className="btn sm" onClick={() => app.openModal(<ShareModal t={t} />)}><Ic n="share" /> แชร์ทริปนี้</button>)}
         </div>
         <div className="stats">
           <div className="stat"><b>{t.days.length}</b><span>วัน</span></div>
@@ -68,6 +71,42 @@ export function TripView({ trip: t }: { trip: Trip }) {
         : ui.tab === "check" ? <CheckTab t={t} />
         : <NotesTab t={t} />}
       <Assistant t={t} />
+    </>
+  );
+}
+
+function ShareModal({ t }: { t: Trip }) {
+  const app = useApp();
+  const set = (v: boolean) => {
+    app.updateTrip(t.id, (d) => { if (v) d.shared = true; else delete d.shared; });
+    app.closeModal();
+    app.toast(v ? "แชร์ทริปแล้ว" : "เลิกแชร์แล้ว ทริปกลับเป็นของคุณคนเดียว");
+  };
+  return (
+    <>
+      <h3>{t.shared ? "ทริปนี้แชร์อยู่" : "แชร์ทริปนี้"}</h3>
+      {t.shared ? (
+        <p className="hint" style={{ fontSize: 14 }}>
+          ทุกคนที่คุณแชร์หน้านี้ให้ (สิทธิ์ Editor) เห็นและแก้ทริปนี้ได้ แก้แล้วอีกฝ่ายเห็นอัปเดตเอง
+          <br /><br />ถ้าเลิกแชร์ ทริปจะกลับมาเป็นของคุณคนเดียว และคนอื่นจะไม่เห็นทริปนี้อีก
+        </p>
+      ) : (
+        <div className="hint" style={{ fontSize: 14 }}>
+          <p style={{ margin: "0 0 8px" }}>ทริปที่แชร์ จะเห็นและแก้ได้ร่วมกันกับทุกคนที่คุณแชร์หน้านี้ให้ ทริปอื่นยังเป็นส่วนตัวเหมือนเดิม</p>
+          <p style={{ margin: "0 0 4px" }}><b style={{ color: "var(--ink)" }}>ให้อีกคนเข้ามาใช้ได้:</b></p>
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            <li>กดปุ่ม Share ของหน้านี้บน claude.ai</li>
+            <li>ใส่อีเมลบัญชี Claude ของอีกคน แล้วเลือกสิทธิ์ <b>Editor</b> (สิทธิ์ Viewer จะแก้อะไรไม่ได้)</li>
+            <li>ส่งลิงก์หน้านี้ให้ เขาต้องล็อกอิน claude.ai ก่อนเปิด</li>
+          </ol>
+        </div>
+      )}
+      <div className="foot">
+        <button className="btn" onClick={app.closeModal}>ปิด</button>
+        {t.shared
+          ? <button className="btn coral" onClick={() => set(false)}>เลิกแชร์</button>
+          : <button className="btn primary" onClick={() => set(true)}><Ic n="share" /> แชร์ทริปนี้</button>}
+      </div>
     </>
   );
 }

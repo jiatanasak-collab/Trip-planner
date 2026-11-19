@@ -69,6 +69,8 @@ export interface Trip {
   notes: string;
   created: number;
   updated: number;
+  /** แชร์ให้คนที่เข้าหน้านี้ได้เห็นและแก้ร่วมกัน (เฉพาะหน้า artifact) */
+  shared?: boolean;
 }
 
 /** ประเทศที่ผู้ใช้ติ๊กเองว่าเคยไป (key = ISO 3166-1 numeric เช่น "392") */

@@ -62,7 +62,7 @@ export function Home() {
             return (
               <div key={t.id} className="card trip-card" onClick={() => { setUi({ tab: "plan", mapDay: null }); go("trip", t.id); }}>
                 <div className="stripe" style={{ background: now ? "var(--coral)" : past ? "var(--muted)" : "var(--teal)" }} />
-                <h3>{t.name}</h3>
+                <h3>{t.name}{t.shared && <span className="chip shared-chip">แชร์</span>}</h3>
                 <div className="meta">{t.destination || "ยังไม่ระบุปลายทาง"}</div>
                 <div className="meta">
                   {t.start ? fmtDate(t.start, false) + (t.end && t.end !== t.start ? " – " + fmtDate(t.end, false) : "") : "ยังไม่กำหนดวัน"}

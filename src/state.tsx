@@ -79,6 +79,26 @@ export function AppProvider({ store, children }: { store: TripStore; children: R
     aiAvailable().then(setAi);
   }, [store]);
 
+  // ทริปที่แชร์: อีกคนแก้แล้วอัปเดตที่นี่ด้วย (เฉพาะหน้า artifact)
+  useEffect(() => {
+    if (!loaded || !store.subscribeShared) return;
+    return store.subscribeShared((serverTrips) => {
+      const cur = tripsRef.current;
+      const next = { ...cur };
+      let changed = false;
+      const ids = new Set(serverTrips.map((t) => t.id));
+      for (const t of serverTrips) {
+        const mine = cur[t.id];
+        if (!mine || (t.updated > mine.updated)) { next[t.id] = t; changed = true; }
+      }
+      // ทริปที่แชร์ซึ่งอีกคนลบหรือเลิกแชร์ (ไม่นับที่เพิ่งแก้ในเครื่องนี้และยังเขียนไม่เสร็จ)
+      for (const t of Object.values(cur)) {
+        if (t.shared && !ids.has(t.id) && Date.now() - t.updated > 5000) { delete next[t.id]; changed = true; }
+      }
+      if (changed) { tripsRef.current = next; setTrips(next); }
+    });
+  }, [loaded, store]);
+
   useEffect(() => {
     const on = () => setUiState((u) => ({ ...u, ...readHash() }));
     window.addEventListener("hashchange", on);

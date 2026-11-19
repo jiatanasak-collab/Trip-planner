@@ -52,3 +52,13 @@
   .ai-sub{display:none}
   .ai-sheet{left:0;right:0;bottom:0;width:auto;height:min(82vh, calc(100vh - env(safe-area-inset-top, 0px) - 12px));border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom, 0px);padding-left:env(safe-area-inset-left, 0px);padding-right:env(safe-area-inset-right, 0px)}
 }
+
+/* ทริปที่แชร์ */
+.btn.shared-on{border-color:var(--teal);color:var(--gold)}
+.shared-chip{margin-left:8px;vertical-align:4px;color:var(--c-shop);font-family:"IBM Plex Sans Thai",sans-serif}
+.ai-attach{align-self:center}
+.ai-pending{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px 0;border-top:1px solid var(--line)}
+.ai-pending div{position:relative}
+.ai-pending img,.ai-thumbs img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.ai-pending button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:var(--coral);color:var(--on-accent);cursor:pointer;font-size:12px;line-height:1}
+.ai-thumbs{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}

@@ -9,12 +9,15 @@ import { getSampler, MODEL } from "./client";
 
 export interface ChatTurn { role: "user" | "assistant"; content: string }
 
-/** ใช้ผู้ช่วยได้ไหม (ต้องเป็นหน้า artifact ที่รองรับ tools) */
-export async function assistantAvailable(): Promise<boolean> {
+export interface AssistantCaps { images: { maxCount: number; maxInputBytes: number; mediaTypes: string[] } | null }
+
+/** ใช้ผู้ช่วยได้ไหม (ต้องเป็นหน้า artifact ที่รองรับ tools) และแนบรูปได้ไหม */
+export async function assistantAvailable(): Promise<AssistantCaps | null> {
   const s = await getSampler();
-  if (!s) return false;
+  if (!s) return null;
   const lim = await s.limits().catch(() => null);
-  return !!lim?.tools;
+  if (!lim?.tools) return null;
+  return { images: lim.images || null };
 }
 
 /** สรุปทริปเป็น JSON สั้นๆ ให้ Claude อ่าน (วันนับจาก 1) */
@@ -51,6 +54,7 @@ export function instructions(t: Trip): string {
 - ถ้าผู้ใช้ขอคำแนะนำสถานที่ ให้แนะนำ 2–5 แห่งพร้อมเหตุผลสั้นๆ และถามก่อนว่าจะเพิ่มลงแผนไหม ยกเว้นผู้ใช้สั่งให้เพิ่มเลย
 - ห้ามแต่งข้อมูลที่ไม่แน่ใจ เช่น ราคาหรือเวลาเปิดปิดเจาะจง ห้ามลบอะไรที่ผู้ใช้ไม่ได้สั่งลบ
 - ค่าที่พักใส่ในที่พัก (stays) ไม่ต้องซ้ำในกิจกรรม
+- ถ้าผู้ใช้แนบรูป (เช่น ตั๋ว ใบจอง ภาพหน้าจอแผนที่ เมนู หรือรูปสถานที่) ให้อ่านรายละเอียดจากรูปแล้วทำตามที่สั่ง เช่น ใส่เวลา/เลขที่จองลงกิจกรรมหรือที่พัก ถ้ารูปอ่านไม่ชัดให้บอกตรงๆ
 - ผู้ใช้กด "ย้อนกลับ" ได้ทุกครั้ง จึงแก้ตามคำสั่งได้เลยไม่ต้องถามยืนยัน
 
 ข้อมูลทริปปัจจุบัน (JSON):
@@ -235,7 +239,7 @@ export function makeTools(getTrip: GetTrip, apply: Apply, onChange: (n: number) 
 /** ส่งข้อความหนึ่งรอบ: Claude อาจเรียกเครื่องมือหลายครั้งแล้วตอบข้อความสรุป */
 export async function askAssistant(opts: {
   trip: Trip; history: ChatTurn[]; getTrip: GetTrip; apply: Apply; onChange: (n: number) => void;
-  onText: (text: string) => void; signal: AbortSignal;
+  onText: (text: string) => void; signal: AbortSignal; images?: File[];
 }): Promise<string> {
   const sample = await getSampler();
   if (!sample) throw { code: "not_available", message: "ผู้ช่วยใช้ได้เฉพาะในหน้า artifact บน claude.ai" };
@@ -246,6 +250,7 @@ export async function askAssistant(opts: {
   const res = await sample(input, {
     model: MODEL, modelTier: "default", signal: opts.signal,
     tools: makeTools(opts.getTrip, opts.apply, opts.onChange),
+    ...(opts.images?.length ? { images: opts.images } : {}),
     onText: ({ text }: { text: string }) => opts.onText(text),
   });
   return res.text;
