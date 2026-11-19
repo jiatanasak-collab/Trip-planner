@@ -150,6 +150,12 @@ export function ImportModal({ intoTripId }: { intoTripId?: string }) {
                 {p.stays.map((s: any, i: number) => <div key={i} className="pi">{s?.name} <em>· วันที่ {(parseInt(s?.startDay) || 0) + 1} · {parseInt(s?.nights) || 1} คืน</em></div>)}
               </>
             )}
+            {typeof p.notes === "string" && p.notes.trim() && (
+              <>
+                <div className="pd">บันทึกของทริป</div>
+                <div className="pi" style={{ whiteSpace: "pre-wrap", color: "var(--muted)" }}>{p.notes.trim().split("\n").slice(0, 4).join("\n")}{p.notes.trim().split("\n").length > 4 ? "\n…" : ""}</div>
+              </>
+            )}
             {Array.isArray(p.checklist) && p.checklist.length > 0 && (
               <>
                 <div className="pd">เช็กลิสต์</div>

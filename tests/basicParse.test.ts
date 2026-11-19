@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { importAsNewTrip } from "../src/domain/trip";
 import { basicParse, findDate, toYear } from "../src/domain/basicParse";
 
 const TODAY = new Date(2026, 10, 19); // 19 พ.ย. 2026
@@ -89,5 +91,47 @@ describe("basicParse", () => {
   });
   it("ข้อความว่าง", () => {
     expect(basicParse("", TODAY).days).toEqual([]);
+  });
+});
+
+describe("basicParse: แผนจาก ChatGPT ที่มีข้อมูลตั๋วก่อนวันแรก", () => {
+  const text = readFileSync(new URL("./fixtures/japan-chatgpt.txt", import.meta.url), "utf8");
+  const p = basicParse(text, TODAY);
+  it("ได้ 12 วัน ปี 2027 ตามที่เขียนในแผน", () => {
+    expect(p.days).toHaveLength(12);
+    expect(p.start).toBe("2027-01-16");
+    expect(p.end).toBe("2027-01-27");
+    expect(p.name).toBe("แพลนเที่ยวญี่ปุ่น 16–27 ม.ค. 2027");
+  });
+  it("ข้อมูลตั๋วเครื่องบินเก็บเป็นบันทึก ไม่กลายเป็นวัน", () => {
+    expect(p.notes).toContain("XJ 606");
+    expect(p.notes).toContain("XJ 611");
+  });
+  it("บรรทัด พัก: กลายเป็นที่พักพร้อมจำนวนคืน", () => {
+    expect(p.stays).toEqual([
+      { name: "Tokyo", startDay: 0, nights: 4 },
+      { name: "Yamanakako", startDay: 4, nights: 2 },
+      { name: "Nagoya", startDay: 6, nights: 2 },
+      { name: "Osaka", startDay: 8, nights: 3 },
+    ]);
+    expect(p.days.flatMap((d) => d.items).some((i) => i.title.startsWith("พัก"))).toBe(false);
+  });
+  it("เวลาท้ายบรรทัด และประโยคอธิบายเป็นหมายเหตุ", () => {
+    expect(p.days[0].items[1]).toMatchObject({ time: "18:25", title: "ถึงญี่ปุ่น" });
+    expect(p.days[11].items[2]).toMatchObject({ time: "19:45", title: "ขึ้นเครื่องกลับ" });
+    expect(p.days[0].items[3].note).toContain("วันนี้ไม่ควรใส่โปรแกรมเที่ยว");
+  });
+  it("นำเข้าเป็นทริปได้ครบ", () => {
+    const t = importAsNewTrip(p, "");
+    expect(t.days).toHaveLength(12);
+    expect(t.stays.map((s) => s.nights)).toEqual([4, 2, 2, 3]);
+    expect(t.notes).toContain("Thai AirAsia X");
+  });
+});
+
+describe("basicParse: วันที่ข้ามปี", () => {
+  it("ธ.ค. → ม.ค. ไม่ได้เขียนปี จะขึ้นปีใหม่", () => {
+    const p = basicParse("Day 1 — 30 ธ.ค. 2026\n- a\nDay 2 — 31 ธ.ค.\n- b\nDay 3 — 1 ม.ค.\n- c", TODAY);
+    expect(p.days.map((d) => d.date)).toEqual(["2026-12-30", "2026-12-31", "2027-01-01"]);
   });
 });

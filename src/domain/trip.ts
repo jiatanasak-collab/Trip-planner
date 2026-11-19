@@ -286,6 +286,7 @@ export function mergeIntoTrip(t: Trip, parsed: any, startOverride: string): void
   t.stays.sort((a, b) => a.startDay - b.startDay);
   add.checklist.forEach((c) => { if (!t.checklist.some((x) => x.text === c.text)) t.checklist.push(c); });
   if (!t.destination && add.destination) t.destination = add.destination;
+  if (add.notes.trim() && !t.notes.includes(add.notes.trim())) t.notes = (t.notes.trim() ? t.notes.trim() + "\n\n" : "") + add.notes.trim();
 }
 
 export const catLabel = (k: string) => (CATS as any)[k]?.label || "อื่นๆ";
